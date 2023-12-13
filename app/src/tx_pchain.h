@@ -13,28 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-
 #pragma once
-
+#include "parser_common.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <sigutils.h>
-#include <stdbool.h>
-
-#include "coin.h"
-#include "zxerror.h"
-
-extern uint32_t hdPath[HDPATH_LEN_DEFAULT];
-extern uint8_t change_address[20];
-
-zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen, uint16_t *addrResponseLen);
-
-zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize);
-
-zxerr_t crypto_get_address(void);
-
+parser_error_t parser_pchain(parser_context_t *c, parser_tx_t *v);
+parser_error_t print_add_del_val_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                    char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount);
+parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                 char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount);
+parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                 char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount);
 #ifdef __cplusplus
 }
 #endif

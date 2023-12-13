@@ -21,6 +21,11 @@ extern "C" {
 
 #define CLA 0x58
 
+typedef enum {
+    BECH32 = 0,
+    UNSUPPORTED = 0xFF,
+} address_encoding_e;
+
 #define HDPATH_LEN_DEFAULT 5
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2c)    // 44
 #define HDPATH_1_DEFAULT (0x80000000u | 0x2328)  // 9000

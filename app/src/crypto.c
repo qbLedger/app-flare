@@ -23,7 +23,7 @@
 #include "zxmacros.h"
 
 uint32_t hdPath[HDPATH_LEN_DEFAULT];
-
+uint8_t change_address[20];
 #include <bech32.h>
 
 #define MAX_DER_SIGNATURE_LEN 73
@@ -39,11 +39,11 @@ zxerr_t crypto_extractUncompressedPublicKey(uint8_t *pubKey, uint16_t pubKeyLen)
     zxerr_t error = zxerr_unknown;
 
     CATCH_CXERROR(os_derive_bip32_with_seed_no_throw(HDW_NORMAL, CX_CURVE_256K1, hdPath, HDPATH_LEN_DEFAULT, privateKeyData,
-                                                     NULL, NULL, 0))
+                                                     NULL, NULL, 0));
 
-    CATCH_CXERROR(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1, privateKeyData, 32, &cx_privateKey))
-    CATCH_CXERROR(cx_ecfp_init_public_key_no_throw(CX_CURVE_256K1, NULL, 0, &cx_publicKey))
-    CATCH_CXERROR(cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1, &cx_publicKey, &cx_privateKey, 1))
+    CATCH_CXERROR(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1, privateKeyData, 32, &cx_privateKey));
+    CATCH_CXERROR(cx_ecfp_init_public_key_no_throw(CX_CURVE_256K1, NULL, 0, &cx_publicKey));
+    CATCH_CXERROR(cx_ecfp_generate_pair_no_throw(CX_CURVE_256K1, &cx_publicKey, &cx_privateKey, 1));
     memcpy(pubKey, cx_publicKey.W, PK_LEN_SECP256K1_UNCOMPRESSED);
     error = zxerr_ok;
 
@@ -88,12 +88,12 @@ zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigS
 
     // Generate keys
     CATCH_CXERROR(os_derive_bip32_with_seed_no_throw(HDW_NORMAL, CX_CURVE_256K1, hdPath, HDPATH_LEN_DEFAULT, privateKeyData,
-                                                     NULL, NULL, 0))
-    CATCH_CXERROR(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1, privateKeyData, 32, &cx_privateKey))
+                                                     NULL, NULL, 0));
+    CATCH_CXERROR(cx_ecfp_init_private_key_no_throw(CX_CURVE_256K1, privateKeyData, 32, &cx_privateKey));
 
     // Sign
     CATCH_CXERROR(cx_ecdsa_sign_no_throw(&cx_privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, messageDigest, CX_SHA256_SIZE,
-                                         signature, &signatureLength, &info))
+                                         signature, &signatureLength, &info));
 
     *sigSize = signatureLength;
     error = zxerr_ok;
@@ -117,8 +117,8 @@ zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen, uint16_t *addrRe
 
     char *addr = (char *)(buffer + PK_LEN_SECP256K1);
     uint8_t uncompressedPubkey[PK_LEN_SECP256K1_UNCOMPRESSED] = {0};
-    CHECK_ZXERR(crypto_extractUncompressedPublicKey(uncompressedPubkey, sizeof(uncompressedPubkey)))
-    CHECK_ZXERR(compressPubkey(uncompressedPubkey, sizeof(uncompressedPubkey), buffer, bufferLen))
+    CHECK_ZXERR(crypto_extractUncompressedPublicKey(uncompressedPubkey, sizeof(uncompressedPubkey)));
+    CHECK_ZXERR(compressPubkey(uncompressedPubkey, sizeof(uncompressedPubkey), buffer, bufferLen));
 
     const uint8_t outLen = crypto_encodePubkey(buffer, addr, bufferLen - PK_LEN_SECP256K1);
 
@@ -128,5 +128,20 @@ zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen, uint16_t *addrRe
     }
 
     *addrResponseLen = PK_LEN_SECP256K1 + outLen;
+    return zxerr_ok;
+}
+
+zxerr_t crypto_get_address(void) {
+    uint8_t uncompressedPubkey[PK_LEN_SECP256K1_UNCOMPRESSED] = {0};
+    uint8_t compressedPubkey[PK_LEN_SECP256K1] = {0};
+    CHECK_ZXERR(crypto_extractUncompressedPublicKey(uncompressedPubkey, sizeof(uncompressedPubkey)));
+    CHECK_ZXERR(compressPubkey(uncompressedPubkey, sizeof(uncompressedPubkey), compressedPubkey, sizeof(compressedPubkey)));
+
+    // Hash it
+    uint8_t hashed1_pk[CX_SHA256_SIZE] = {0};
+    crypto_sha256(compressedPubkey, PK_LEN_SECP256K1, hashed1_pk, CX_SHA256_SIZE);
+
+    CHECK_ZXERR(ripemd160_32(change_address, hashed1_pk))
+
     return zxerr_ok;
 }

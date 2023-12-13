@@ -139,6 +139,13 @@ __Z_INLINE void handleSign(volatile uint32_t *flags, volatile uint32_t *tx, uint
         THROW(APDU_CODE_OK);
     }
 
+    // GET addres to test later which outputs the app should show
+    zxerr_t zxerr = app_get_address();
+    if (zxerr != zxerr_ok) {
+        *tx = 0;
+        THROW(APDU_CODE_DATA_INVALID);
+    }
+
     const char *error_msg = tx_parse();
     CHECK_APP_CANARY()
     if (error_msg != NULL) {

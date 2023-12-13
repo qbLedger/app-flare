@@ -43,6 +43,7 @@ uint8_t crypto_encodePubkey(const uint8_t *pubkey, char *out, uint16_t out_len);
 
 zxerr_t crypto_sha256(const uint8_t *input, uint16_t inputLen, uint8_t *output, uint16_t outputLen);
 
+zxerr_t ripemd160_32(uint8_t *out, uint8_t *in);
 #ifdef __cplusplus
 }
 #endif

@@ -113,11 +113,16 @@ file(GLOB_RECURSE LIB_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/deps/ledger-zxlib/src/zxformat.c
         ${CMAKE_CURRENT_SOURCE_DIR}/deps/ledger-zxlib/src/bech32.c
         ${CMAKE_CURRENT_SOURCE_DIR}/deps/ledger-zxlib/src/segwit_addr.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ledger-zxlib/src/timeutils.c
         ####
         ${CMAKE_CURRENT_SOURCE_DIR}/app/src/parser.c
         ${CMAKE_CURRENT_SOURCE_DIR}/app/src/parser_impl.c
         ${CMAKE_CURRENT_SOURCE_DIR}/app/src/crypto_helper.c
         ${CMAKE_CURRENT_SOURCE_DIR}/deps/ripemd160/ripemd160.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/src/parser_impl_common.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/src/parser_print_common.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/src/tx_cchain.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/src/tx_pchain.c
         )
 
 add_library(app_lib STATIC ${LIB_SRC})
