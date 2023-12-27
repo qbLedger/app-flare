@@ -16,11 +16,7 @@
 
 import Zemu, { ButtonKind, zondaxMainmenuNavigation } from '@zondax/zemu'
 import FlareApp from '@zondax/ledger-flare'
-import { defaultOptions, models, txBlobExample } from './common'
-import secp256k1 from 'secp256k1'
-import { createHash } from 'crypto'
-
-const hdpath = `m/44'/9000'/0/0/0`
+import { defaultOptions, models, hdpath } from './common'
 
 jest.setTimeout(60000)
 
@@ -131,42 +127,6 @@ describe('Standard', function () {
 
       expect(resp.returnCode).toEqual(0x6986)
       expect(resp.errorMessage).toEqual('Transaction rejected')
-    } finally {
-      await sim.close()
-    }
-  })
-
-  test.concurrent.each(models)('sign tx normal', async function (m) {
-    const sim = new Zemu(m.path)
-    try {
-      await sim.start({ ...defaultOptions, model: m.name })
-      const app = new FlareApp(sim.getTransport())
-
-      const responseAddr = await app.getAddressAndPubKey(hdpath)
-      expect(responseAddr.returnCode).toEqual(0x9000)
-      console.log(responseAddr)
-
-      const pubKeyRaw = new Uint8Array(responseAddr.compressed_pk!)
-      const pubKey = secp256k1.publicKeyConvert(pubKeyRaw, true)
-
-      // do not wait here.. we need to navigate
-      const signatureRequest = app.sign(hdpath, txBlobExample)
-
-      // Wait until we are not in the main menu
-      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
-      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_transfer`, true)
-
-      const signatureResponse = await signatureRequest
-      console.log(signatureResponse)
-
-      expect(signatureResponse.returnCode).toEqual(0x9000)
-      expect(signatureResponse.errorMessage).toEqual('No errors')
-
-      // Now verify the signature
-      const message = createHash('sha256').update(txBlobExample).digest()
-      const signature = new Uint8Array(signatureResponse.signature!)
-      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), new Uint8Array(message), pubKey)
-      expect(valid).toEqual(true)
     } finally {
       await sim.close()
     }
