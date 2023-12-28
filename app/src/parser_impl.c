@@ -159,7 +159,6 @@ parser_error_t getNumItems(const parser_context_t *ctx, uint8_t *numItems) {
             // Tx + fee + Amounts(= n_outs) + Addresses
             *numItems = 2 + ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
                         parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask);
-            ;
             break;
         case p_import_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses

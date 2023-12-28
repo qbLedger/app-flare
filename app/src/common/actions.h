@@ -33,7 +33,7 @@ __Z_INLINE zxerr_t app_fill_address() {
     MEMZERO(G_io_apdu_buffer, IO_APDU_BUFFER_SIZE);
 
     action_addrResponseLen = 0;
-    zxerr_t err = crypto_fillAddress(G_io_apdu_buffer, IO_APDU_BUFFER_SIZE, &action_addrResponseLen);
+    const zxerr_t err = crypto_fillAddress(G_io_apdu_buffer, IO_APDU_BUFFER_SIZE, &action_addrResponseLen);
 
     if (err != zxerr_ok || action_addrResponseLen == 0) {
         THROW(APDU_CODE_EXECUTION_ERROR);
@@ -76,7 +76,7 @@ __Z_INLINE void app_reply_error() {
 __Z_INLINE zxerr_t app_get_address() {
     zemu_log("app_get_address\n");
 
-    zxerr_t err = crypto_get_address();
+    const zxerr_t err = crypto_get_address();
 
     if (err != zxerr_ok) {
         THROW(APDU_CODE_EXECUTION_ERROR);

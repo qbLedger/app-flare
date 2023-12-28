@@ -15,6 +15,7 @@
  ********************************************************************************/
 #include "parser_print_common.h"
 
+#include "base58.h"
 #include "bech32.h"
 #include "parser_common.h"
 #include "timeutils.h"
@@ -147,53 +148,6 @@ parser_error_t printTimestamp(uint64_t timestamp, char *outVal, uint16_t outValL
     return parser_ok;
 }
 
-static parser_error_t bs58_encode(const uint8_t *input, size_t input_len, uint8_t *output, size_t output_len) {
-    if (input == NULL || output == NULL) {
-        return parser_unexpected_error;
-    }
-
-    const size_t alphabet_size = 58;
-    const uint8_t *table = (const uint8_t *)ALPHABET_ENCODE;
-
-    size_t index = 0;
-    for (size_t i = 0; i < input_len; ++i) {
-        size_t carry = input[i];
-        for (size_t j = 0; j < index; ++j) {
-            carry += output[j] << 8;
-            output[j] = carry % alphabet_size;
-            carry /= alphabet_size;
-        }
-        while (carry > 0) {
-            if (index == output_len) {
-                return parser_unexpected_error;  // Output buffer too small
-            }
-            output[index++] = carry % alphabet_size;
-            carry /= alphabet_size;
-        }
-    }
-
-    for (size_t i = 0; i < input_len && input[i] == 0; ++i) {
-        if (index == output_len) {
-            return parser_unexpected_error;  // Output buffer too small
-        }
-        output[index++] = 0;
-    }
-
-    for (size_t i = 0; i < index; ++i) {
-        output[i] = table[output[i]];
-    }
-
-    // Reverse the output
-    for (size_t i = 0, j = index - 1; i < j; ++i, --j) {
-        uint8_t temp = output[i];
-        output[i] = output[j];
-        output[j] = temp;
-    }
-
-    return parser_ok;
-    ;
-}
-
 parser_error_t printNodeId(const uint8_t *nodeId, char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
     if (nodeId == NULL) {
         return parser_unexpected_error;
@@ -223,11 +177,10 @@ parser_error_t printNodeId(const uint8_t *nodeId, char *outVal, uint16_t outValL
 
     // Prepare node_id by appending prefix
     uint8_t node_id[NODE_ID_MAX_SIZE] = {0};
+    size_t outlen = sizeof(node_id) - sizeof(prefix) + 1;
     memcpy(node_id, prefix, sizeof(prefix) - 1);
 
-    CHECK_ERROR(bs58_encode((const uint8_t *)data, sizeof(data), node_id + sizeof(prefix) - 1,
-                            sizeof(node_id) - sizeof(prefix) + 1));
-
+    CHECK_ERROR(encode_base58((const unsigned char *)data, sizeof(data), node_id + sizeof(prefix) - 1, &outlen))
     pageString(outVal, outValLen, (const char *)node_id, pageIdx, pageCount);
 
     return parser_ok;

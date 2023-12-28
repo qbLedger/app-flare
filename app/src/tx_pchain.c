@@ -162,6 +162,7 @@ parser_error_t parser_pchain(parser_context_t *c, parser_tx_t *v) {
             return parser_handle_add_delegator_validator(c, v);
             break;
         default:
+            return parser_unexpected_type;
             break;
     }
 
@@ -226,11 +227,11 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         char chain = 0;
         CHECK_ERROR(parser_get_chain_alias(ctx->tx_obj->tx.p_export_tx.destination_chain, &chain));
         snprintf(outVal, outValLen, "P to %c chain", chain);
+        return parser_ok;
     }
 
     // print ampount and addresses
-    if (displayIdx > 0 &&
-        displayIdx <= ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
+    if (displayIdx <= ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
                           parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask)) {
         // Create new context parser for outputs
         parser_context_t output_ctx = {.buffer = ctx->tx_obj->tx.p_export_tx.secp_outs.outs,
@@ -254,6 +255,7 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
             snprintf(outKey, outKeyLen, "Address");
             CHECK_ERROR(printAddress(address, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
         }
+        return parser_ok;
     }
 
     if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
@@ -263,9 +265,10 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
                        (ctx->tx_obj->tx.p_export_tx.base_secp_outs.out_sum + ctx->tx_obj->tx.p_export_tx.secp_outs.out_sum);
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
     }
 
-    return parser_ok;
+    return parser_display_idx_out_of_range;
 }
 
 parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
@@ -276,11 +279,12 @@ parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx
         char chain = 0;
         CHECK_ERROR(parser_get_chain_alias(ctx->tx_obj->tx.p_import_tx.source_chain, &chain));
         snprintf(outVal, outValLen, "P from %c chain", chain);
+        return parser_ok;
     }
 
     // print ampount and addresses
-    if (displayIdx > 0 && displayIdx <= ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs +
-                                            ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_outs) {
+    if (displayIdx <=
+        ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs + ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_outs) {
         // Create new context parser for outputs
         parser_context_t output_ctx = {
             .buffer = ctx->tx_obj->tx.p_import_tx.base_secp_outs.outs,
@@ -304,6 +308,7 @@ parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx
             snprintf(outKey, outKeyLen, "Address");
             CHECK_ERROR(printAddress(address, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
         }
+        return parser_ok;
     }
 
     if (displayIdx ==
@@ -313,7 +318,8 @@ parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx
                        ctx->tx_obj->tx.p_import_tx.base_secp_outs.out_sum;
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
     }
 
-    return parser_ok;
+    return parser_display_idx_out_of_range;
 }

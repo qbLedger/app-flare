@@ -97,6 +97,7 @@ parser_error_t parser_cchain(parser_context_t *c, parser_tx_t *v) {
             return parser_handle_cchain_import(c, v);
             break;
         default:
+            return parser_unexpected_type;
             break;
     }
 
@@ -110,11 +111,11 @@ parser_error_t print_c_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         char chain = 0;
         CHECK_ERROR(parser_get_chain_alias(ctx->tx_obj->tx.c_export_tx.destination_chain, &chain));
         snprintf(outVal, outValLen, "C to %c chain", chain);
+        return parser_ok;
     }
 
     // print ampount and addresses
-    if (displayIdx > 0 &&
-        displayIdx <= ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
+    if (displayIdx <= ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
                           parser_get_renderable_outputs_number(ctx->tx_obj->tx.c_export_tx.secp_outs.out_render_mask)) {
         parser_context_t output_ctx = {.buffer = ctx->tx_obj->tx.c_export_tx.secp_outs.outs,
                                        .bufferLen = ctx->bufferLen - ctx->tx_obj->tx.c_export_tx.secp_outs.outs_offset + 1,
@@ -137,6 +138,7 @@ parser_error_t print_c_export_tx(const parser_context_t *ctx, uint8_t displayIdx
             snprintf(outKey, outKeyLen, "Address");
             CHECK_ERROR(printAddress(address, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
         }
+        return parser_ok;
     }
 
     if (displayIdx == ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
@@ -145,9 +147,10 @@ parser_error_t print_c_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         uint64_t fee = ctx->tx_obj->tx.c_export_tx.evm_inputs.in_sum - ctx->tx_obj->tx.c_export_tx.secp_outs.out_sum;
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
     }
 
-    return parser_ok;
+    return parser_display_idx_out_of_range;
 }
 
 parser_error_t print_c_import_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
@@ -157,10 +160,11 @@ parser_error_t print_c_import_tx(const parser_context_t *ctx, uint8_t displayIdx
         char chain = 0;
         CHECK_ERROR(parser_get_chain_alias(ctx->tx_obj->tx.c_import_tx.source_chain, &chain));
         snprintf(outVal, outValLen, "C from %c chain", chain);
+        return parser_ok;
     }
 
     // print ampount and addresses
-    if (displayIdx > 0 && displayIdx <= 2 * (ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs)) {
+    if (displayIdx <= 2 * (ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs)) {
         parser_context_t output_ctx = {.buffer = ctx->tx_obj->tx.c_import_tx.evm_outs.outs,
                                        .bufferLen = ctx->bufferLen - ctx->tx_obj->tx.c_import_tx.evm_outs.outs_offset + 1,
                                        .offset = 0,
@@ -188,6 +192,7 @@ parser_error_t print_c_import_tx(const parser_context_t *ctx, uint8_t displayIdx
             }
             pageString(outVal, outValLen, tmp_buffer, pageIdx, pageCount);
         }
+        return parser_ok;
     }
 
     if (displayIdx == (2 * ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs) + 1) {
@@ -195,7 +200,8 @@ parser_error_t print_c_import_tx(const parser_context_t *ctx, uint8_t displayIdx
         uint64_t fee = ctx->tx_obj->tx.c_import_tx.secp_inputs.in_sum - ctx->tx_obj->tx.c_import_tx.evm_outs.out_sum;
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
     }
 
-    return parser_ok;
+    return parser_display_idx_out_of_range;
 }
