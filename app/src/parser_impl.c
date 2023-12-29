@@ -118,7 +118,7 @@ static parser_error_t parser_get_network_id(parser_context_t *c, parser_tx_t *v)
 
 static parser_error_t parser_verify_codec(parser_context_t *ctx) {
     uint16_t codec = 0;
-    read_u16(ctx, &codec);
+    CHECK_ERROR(read_u16(ctx, &codec));
     if (codec != 0) {
         return parser_invalid_codec;
     }

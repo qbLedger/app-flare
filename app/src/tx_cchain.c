@@ -22,6 +22,7 @@
 
 static parser_error_t parser_handle_cchain_export(parser_context_t *c, parser_tx_t *v) {
     // Get destination chain
+    CHECK_ERROR(checkAvailableBytes(c, BLOCKCHAIN_ID_LEN));
     v->tx.c_export_tx.destination_chain = c->buffer + c->offset;
     if (!MEMCMP(v->tx.c_export_tx.destination_chain, v->blockchain_id, BLOCKCHAIN_ID_LEN)) {
         return parser_unexpected_chain;
@@ -35,6 +36,7 @@ static parser_error_t parser_handle_cchain_export(parser_context_t *c, parser_tx
     }
 
     // Pointer to inputs
+    CHECK_ERROR(verifyContext(c));
     v->tx.c_export_tx.evm_inputs.ins = c->buffer + c->offset;
     CHECK_ERROR(parse_evm_inputs(c, &v->tx.c_export_tx.evm_inputs));
 
@@ -46,6 +48,7 @@ static parser_error_t parser_handle_cchain_export(parser_context_t *c, parser_tx
 
     // Pointer to outputs
     if (v->tx.c_export_tx.secp_outs.n_outs > 0) {
+        CHECK_ERROR(verifyContext(c));
         v->tx.c_export_tx.secp_outs.outs = c->buffer + c->offset;
         v->tx.c_export_tx.secp_outs.outs_offset = c->offset;
         CHECK_ERROR(parse_transferable_secp_output(c, &v->tx.c_export_tx.secp_outs, false));
@@ -56,6 +59,7 @@ static parser_error_t parser_handle_cchain_export(parser_context_t *c, parser_tx
 
 static parser_error_t parser_handle_cchain_import(parser_context_t *c, parser_tx_t *v) {
     // Get source chain
+    CHECK_ERROR(checkAvailableBytes(c, BLOCKCHAIN_ID_LEN));
     v->tx.c_import_tx.source_chain = c->buffer + c->offset;
     if (!MEMCMP(v->tx.c_import_tx.source_chain, v->blockchain_id, BLOCKCHAIN_ID_LEN)) {
         return parser_unexpected_chain;
@@ -69,6 +73,7 @@ static parser_error_t parser_handle_cchain_import(parser_context_t *c, parser_tx
     }
 
     // Pointer to inputs
+    CHECK_ERROR(verifyContext(c));
     v->tx.c_import_tx.secp_inputs.ins = c->buffer + c->offset;
     CHECK_ERROR(parse_transferable_secp_input(c, &v->tx.c_import_tx.secp_inputs));
 
@@ -80,6 +85,7 @@ static parser_error_t parser_handle_cchain_import(parser_context_t *c, parser_tx
 
     // Pointer to outputs
     if (v->tx.c_import_tx.evm_outs.n_outs > 0) {
+        CHECK_ERROR(verifyContext(c));
         v->tx.c_import_tx.evm_outs.outs = c->buffer + c->offset;
         v->tx.c_import_tx.evm_outs.outs_offset = c->offset;
         CHECK_ERROR(parse_evm_output(c, &v->tx.c_import_tx.evm_outs));

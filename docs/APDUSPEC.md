@@ -54,7 +54,7 @@ The general structure of commands and responses is as follows:
 | INS   | byte (1) | Instruction ID         | 0x00     |
 | P1    | byte (1) | Parameter 1            | ignored  |
 | P2    | byte (1) | Parameter 2            | ignored  |
-| L     | byte (1) | Bytes in payload       | 0x0      |
+| L     | byte (1) | Bytes in payload       | 0        |
 
 #### Response
 

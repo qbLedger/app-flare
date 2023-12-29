@@ -48,6 +48,11 @@ static const uint32_t chain_lookup_len = sizeof(chain_lookup_table) / sizeof(cha
     CTX_CHECK_AVAIL((CTX), (SIZE))       \
     (CTX)->offset += (SIZE);
 
+#define CTX_CHECK_BUFFER(CTX)                                  \
+    if ((CTX) == NULL || ((CTX)->offset > (CTX)->bufferLen)) { \
+        return parser_unexpected_buffer_end;                   \
+    }
+
 parser_error_t read_u64(parser_context_t *ctx, uint64_t *result) {
     if (result == NULL) {
         return parser_unexpected_error;
@@ -106,6 +111,16 @@ parser_error_t read_u8(parser_context_t *ctx, uint8_t *result) {
     *result = ctx->buffer[ctx->offset];
     ctx->offset++;
 
+    return parser_ok;
+}
+
+parser_error_t checkAvailableBytes(parser_context_t *ctx, uint16_t buffLen) {
+    CTX_CHECK_AVAIL(ctx, buffLen)
+    return parser_ok;
+}
+
+parser_error_t verifyContext(parser_context_t *ctx) {
+    CTX_CHECK_BUFFER(ctx)
     return parser_ok;
 }
 

@@ -26,6 +26,8 @@ parser_error_t read_u32(parser_context_t *ctx, uint32_t *result);
 parser_error_t read_u64(parser_context_t *ctx, uint64_t *result);
 parser_error_t verifyBytes(parser_context_t *ctx, uint16_t buffLen);
 parser_error_t readBytes(parser_context_t *ctx, uint8_t *buff, uint16_t buffLen);
+parser_error_t checkAvailableBytes(parser_context_t *ctx, uint16_t buffLen);
+parser_error_t verifyContext(parser_context_t *ctx);
 
 parser_error_t parser_get_chain_id(parser_context_t *c, parser_tx_t *v);
 parser_error_t parser_get_chain_alias(const uint8_t *blockchain_id, char *chain);

@@ -20,6 +20,14 @@
 extern "C" {
 #endif
 
+#define CHECK_CX_PARSER_OK(CALL)            \
+    do {                                    \
+        cx_err_t __cx_err = CALL;           \
+        if (__cx_err != CX_OK) {            \
+            return parser_unexpected_error; \
+        }                                   \
+    } while (0)
+
 parser_error_t printAmount64(uint64_t amount, uint8_t amountDenom, network_id_e network_id, char *outVal, uint16_t outValLen,
                              uint8_t pageIdx, uint8_t *pageCount);
 parser_error_t printAddress(const uint8_t *pubkey, network_id_e network_id, char *outVal, uint16_t outValLen,

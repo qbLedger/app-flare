@@ -22,11 +22,8 @@
 #include "zxformat.h"
 #include "zxmacros.h"
 
-#define ALPHABET_ENCODE "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-
 #if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
 #include "cx.h"
-#include "cx_sha256.h"
 #else
 #include "picohash.h"
 #define CX_SHA256_SIZE 32
@@ -106,10 +103,10 @@ parser_error_t printAddress(const uint8_t *pubkey, network_id_e network_id, char
     const char *hrp = "";
     switch (network_id) {
         case songbird:
-            hrp = " song";
+            hrp = "song";
             break;
         case coston:
-            hrp = " costwo";
+            hrp = "costwo";
             break;
         case coston2:
             hrp = "costwo";
@@ -161,7 +158,10 @@ parser_error_t printNodeId(const uint8_t *nodeId, char *outVal, uint16_t outValL
     // Calculate SHA256 checksum
     uint8_t checksum[CX_SHA256_SIZE] = {0};
 #if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
-    cx_hash_sha256(nodeId, NODE_ID_LEN, checksum, CX_SHA256_SIZE);
+    cx_sha256_t ctx;
+    memset(&ctx, 0, sizeof(ctx));
+    cx_sha256_init_no_throw(&ctx);
+    CHECK_CX_PARSER_OK(cx_hash_no_throw(&ctx.header, CX_LAST, nodeId, NODE_ID_LEN, checksum, CX_SHA256_SIZE));
 #else
     picohash_ctx_t ctx;
     picohash_init_sha256(&ctx);

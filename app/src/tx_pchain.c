@@ -29,6 +29,7 @@ static parser_error_t parser_base_tx(parser_context_t *c, transferable_in_secp_t
 
     // Pointer to outputs
     if (outputs->n_outs > 0) {
+        CHECK_ERROR(verifyContext(c));
         outputs->outs = c->buffer + c->offset;
         CHECK_ERROR(parse_transferable_secp_output(c, outputs, true));
     }
@@ -38,6 +39,7 @@ static parser_error_t parser_base_tx(parser_context_t *c, transferable_in_secp_t
 
     // Pointer to inputs
     if (inputs->n_ins > 0) {
+        CHECK_ERROR(verifyContext(c));
         inputs->ins = c->buffer + c->offset;
         CHECK_ERROR(parse_transferable_secp_input(c, inputs));
     }
@@ -57,6 +59,7 @@ parser_error_t parser_handle_p_export_tx(parser_context_t *c, parser_tx_t *v) {
     CHECK_ERROR(parser_base_tx(c, &v->tx.p_export_tx.base_secp_ins, &v->tx.p_export_tx.base_secp_outs));
 
     // Get destination chain
+    CHECK_ERROR(checkAvailableBytes(c, BLOCKCHAIN_ID_LEN));
     v->tx.p_export_tx.destination_chain = c->buffer + c->offset;
     if (!MEMCMP(PIC(v->tx.p_export_tx.destination_chain), v->blockchain_id, BLOCKCHAIN_ID_LEN)) {
         return parser_unexpected_chain;
@@ -70,6 +73,7 @@ parser_error_t parser_handle_p_export_tx(parser_context_t *c, parser_tx_t *v) {
     }
 
     // Pointer to outputs
+    CHECK_ERROR(verifyContext(c));
     v->tx.p_export_tx.secp_outs.outs = c->buffer + c->offset;
     v->tx.p_export_tx.secp_outs.outs_offset = c->offset;
     CHECK_ERROR(parse_transferable_secp_output(c, &v->tx.p_export_tx.secp_outs, true));
@@ -82,6 +86,7 @@ parser_error_t parser_handle_p_import_tx(parser_context_t *c, parser_tx_t *v) {
     CHECK_ERROR(parser_base_tx(c, &v->tx.p_import_tx.base_secp_ins, &v->tx.p_import_tx.base_secp_outs));
 
     // Get source chain
+    CHECK_ERROR(checkAvailableBytes(c, BLOCKCHAIN_ID_LEN));
     v->tx.p_import_tx.source_chain = c->buffer + c->offset;
     if (!MEMCMP(v->tx.p_import_tx.source_chain, v->blockchain_id, BLOCKCHAIN_ID_LEN)) {
         return parser_unexpected_chain;
@@ -95,6 +100,7 @@ parser_error_t parser_handle_p_import_tx(parser_context_t *c, parser_tx_t *v) {
     }
 
     // Pointer to inputs
+    CHECK_ERROR(verifyContext(c));
     v->tx.p_import_tx.secp_ins.ins = c->buffer + c->offset;
     v->tx.p_import_tx.secp_ins.ins_offset = c->offset;
     CHECK_ERROR(parse_transferable_secp_input(c, &v->tx.p_import_tx.secp_ins));
@@ -107,6 +113,7 @@ parser_error_t parser_handle_add_delegator_validator(parser_context_t *c, parser
     CHECK_ERROR(parser_base_tx(c, &v->tx.add_del_val_tx.base_secp_ins, &v->tx.add_del_val_tx.base_secp_outs));
 
     // Node ID
+    CHECK_ERROR(verifyContext(c));
     v->tx.add_del_val_tx.node_id = c->buffer + c->offset;
     CHECK_ERROR(verifyBytes(c, NODE_ID_LEN));
 
@@ -130,6 +137,7 @@ parser_error_t parser_handle_add_delegator_validator(parser_context_t *c, parser
     }
 
     // Pointer to outputs
+    CHECK_ERROR(verifyContext(c));
     v->tx.add_del_val_tx.staked_outs.outs = c->buffer + c->offset;
     CHECK_ERROR(parse_transferable_secp_output(c, &v->tx.add_del_val_tx.staked_outs, false));
 
@@ -138,6 +146,7 @@ parser_error_t parser_handle_add_delegator_validator(parser_context_t *c, parser
     }
 
     // Pointer to owners output
+    CHECK_ERROR(verifyContext(c));
     v->tx.add_del_val_tx.owners_out.outs = c->buffer + c->offset;
     v->tx.add_del_val_tx.owners_out.n_outs = 1;
     CHECK_ERROR(parse_secp_owners_output(c, &v->tx.add_del_val_tx.owners_out));
