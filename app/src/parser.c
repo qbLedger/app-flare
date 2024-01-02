@@ -26,6 +26,9 @@
 #include "coin.h"
 #include "crypto.h"
 #include "crypto_helper.h"
+#include "parser_impl_common.h"
+#include "tx_cchain.h"
+#include "tx_pchain.h"
 
 parser_error_t parser_init_context(parser_context_t *ctx, const uint8_t *buffer, uint16_t bufferSize) {
     ctx->offset = 0;
@@ -63,15 +66,7 @@ parser_error_t parser_validate(parser_context_t *ctx) {
     return parser_ok;
 }
 
-parser_error_t parser_getNumItems(const parser_context_t *ctx, uint8_t *num_items) {
-    // *num_items = _getNumItems();
-    UNUSED(ctx);
-    *num_items = 1;
-    if (*num_items == 0) {
-        return parser_unexpected_number_items;
-    }
-    return parser_ok;
-}
+parser_error_t parser_getNumItems(const parser_context_t *ctx, uint8_t *num_items) { return getNumItems(ctx, num_items); }
 
 static void cleanOutput(char *outKey, uint16_t outKeyLen, char *outVal, uint16_t outValLen) {
     MEMZERO(outKey, outKeyLen);
@@ -98,16 +93,18 @@ parser_error_t parser_getItem(const parser_context_t *ctx, uint8_t displayIdx, c
     CHECK_ERROR(checkSanity(numItems, displayIdx))
     cleanOutput(outKey, outKeyLen, outVal, outValLen);
 
-    switch (displayIdx) {
-        case 0:
-            // Display Item 0
-            snprintf(outKey, outKeyLen, "Transaction Hash");
-
-            uint8_t messageDigest[32] = {0};
-            crypto_sha256(ctx->buffer, ctx->bufferLen, messageDigest, 32);
-            pageStringHex(outVal, outValLen, (const char *)messageDigest, 32, pageIdx, pageCount);
-
-            return parser_ok;
+    switch (ctx->tx_obj->tx_type) {
+        case p_export_tx:
+            return print_p_export_tx(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
+        case p_import_tx:
+            return print_p_import_tx(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
+        case c_export_tx:
+            return print_c_export_tx(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
+        case c_import_tx:
+            return print_c_import_tx(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
+        case add_delegator_tx:
+        case add_validator_tx:
+            return print_add_del_val_tx(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
         default:
             break;
     }

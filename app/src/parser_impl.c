@@ -16,11 +16,10 @@
 
 #include "parser_impl.h"
 
-parser_error_t _read(parser_context_t *c, parser_tx_t *v) {
-    UNUSED(c);
-    UNUSED(v);
-    return parser_ok;
-}
+#include "parser_impl_common.h"
+#include "tx_cchain.h"
+#include "tx_pchain.h"
+#include "zxmacros.h"
 
 const char *parser_getErrorDescription(parser_error_t err) {
     switch (err) {
@@ -46,7 +45,6 @@ const char *parser_getErrorDescription(parser_error_t err) {
             return "Unexpected chain";
         case parser_missing_field:
             return "missing field";
-
         case parser_display_idx_out_of_range:
             return "display index out of range";
         case parser_display_page_out_of_range:
@@ -55,4 +53,139 @@ const char *parser_getErrorDescription(parser_error_t err) {
         default:
             return "Unrecognized error code";
     }
+}
+
+static parser_error_t parser_map_tx_type(parser_context_t *c, parser_tx_t *v) {
+    if (v == NULL) {
+        return parser_init_context_empty;
+    }
+
+    uint32_t raw_tx_type = 0;
+    CHECK_ERROR(read_u32(c, &raw_tx_type))
+
+    switch (raw_tx_type) {
+        case P_CHAIN_EXPORT_TX:
+            v->tx_type = p_export_tx;
+            break;
+        case P_CHAIN_IMPORT_TX:
+            v->tx_type = p_import_tx;
+            break;
+        case C_CHAIN_EXPORT_TX:
+            v->tx_type = c_export_tx;
+            break;
+        case C_CHAIN_IMPORT_TX:
+            v->tx_type = c_import_tx;
+            break;
+        case ADD_DELEGATOR_TX:
+            v->tx_type = add_delegator_tx;
+            break;
+        case ADD_VALIDATOR_TX:
+            v->tx_type = add_validator_tx;
+            break;
+        default:
+            return parser_unknown_transaction;
+            break;
+    }
+    return parser_ok;
+}
+
+static parser_error_t parser_get_network_id(parser_context_t *c, parser_tx_t *v) {
+    if (v == NULL) {
+        return parser_init_context_empty;
+    }
+
+    uint32_t netword_id = 0;
+    CHECK_ERROR(read_u32(c, &netword_id))
+
+    switch (netword_id) {
+        case MAINNET_ID:
+            v->network_id = mainnet;
+            break;
+        case COSTON_ID:
+            v->network_id = coston;
+            break;
+        case COSTON2_ID:
+            v->network_id = coston2;
+            break;
+        case SONGBIRD_ID:
+            v->network_id = songbird;
+            break;
+        default:
+            return parser_unexpected_network;
+    }
+    return parser_ok;
+}
+
+static parser_error_t parser_verify_codec(parser_context_t *ctx) {
+    uint16_t codec = 0;
+    CHECK_ERROR(read_u16(ctx, &codec));
+    if (codec != 0) {
+        return parser_invalid_codec;
+    }
+    return parser_ok;
+}
+
+parser_error_t _read(parser_context_t *ctx, parser_tx_t *v) {
+    if (ctx == NULL || v == NULL) {
+        return parser_init_context_empty;
+    }
+
+    CHECK_ERROR(parser_verify_codec(ctx))
+
+    // Read Tx type raw value
+    CHECK_ERROR(parser_map_tx_type(ctx, v));
+
+    // Get Network Id and Chain ID
+    CHECK_ERROR(parser_get_network_id(ctx, v));
+    CHECK_ERROR(parser_get_chain_id(ctx, v));
+
+    if (v->chain_id == c_chain) {
+        CHECK_ERROR(parser_cchain(ctx, v));
+    } else {
+        CHECK_ERROR(parser_pchain(ctx, v));
+    }
+
+    if (ctx->offset != ctx->bufferLen) {
+        return parser_unexpected_unparsed_bytes;
+    }
+
+    return parser_ok;
+}
+
+parser_error_t getNumItems(const parser_context_t *ctx, uint8_t *numItems) {
+    *numItems = 0;
+    switch (ctx->tx_obj->tx_type) {
+        case p_export_tx:
+            // Tx + fee + Amounts(= n_outs) + Addresses
+            *numItems = 2 + ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
+                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask);
+            break;
+        case p_import_tx:
+            // Tx + fee + Amounts(= n_outs) + Addresses
+            *numItems = 2 + ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs +
+                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_import_tx.base_secp_outs.out_render_mask);
+            break;
+        case c_export_tx:
+            // Tx + fee + Amounts(= n_outs) + Addresses
+            *numItems = 2 + ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
+                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.c_export_tx.secp_outs.out_render_mask);
+            break;
+        case c_import_tx:
+            // Tx + fee + (amount + address) * n_outs
+            *numItems = 2 + (2 * ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs);
+            break;
+        case add_delegator_tx:
+            *numItems = 6;
+            break;
+        case add_validator_tx:
+            *numItems = 7;
+            break;
+        default:
+            break;
+    }
+
+    if (*numItems == 0) {
+        return parser_unexpected_number_items;
+    }
+    return parser_ok;
 }

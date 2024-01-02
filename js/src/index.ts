@@ -71,7 +71,6 @@ export default class FlareApp extends GenericApp {
     return this._pubkey(path, true, hrp);
   }
 
-  // #{TODO} --> Create sign methods, this are example ones!
   async signSendChunk(chunkIdx: number, chunkNum: number, chunk: Buffer): Promise<ResponseSign> {
     let payloadType = PAYLOAD_TYPE.ADD;
     if (chunkIdx === 1) {

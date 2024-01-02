@@ -42,7 +42,6 @@ void extractHDPath(uint32_t rx, uint32_t offset) {
 
     memcpy(hdPath, G_io_apdu_buffer + offset, sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
-    // #{TODO} --> testnet necessary?
     const bool mainnet = hdPath[0] == HDPATH_0_DEFAULT && hdPath[1] == HDPATH_1_DEFAULT;
 
     if (!mainnet) {
@@ -116,7 +115,7 @@ __Z_INLINE void handleGetAddr(volatile uint32_t *flags, volatile uint32_t *tx, u
 
     const uint8_t requireConfirmation = G_io_apdu_buffer[OFFSET_P1];
 
-    zxerr_t zxerr = app_fill_address();
+    const zxerr_t zxerr = app_fill_address();
     if (zxerr != zxerr_ok) {
         *tx = 0;
         THROW(APDU_CODE_DATA_INVALID);
@@ -137,6 +136,13 @@ __Z_INLINE void handleSign(volatile uint32_t *flags, volatile uint32_t *tx, uint
     zemu_log("handleSign\n");
     if (!process_chunk(tx, rx)) {
         THROW(APDU_CODE_OK);
+    }
+
+    // GET address to test later which outputs the app should show
+    zxerr_t zxerr = app_get_address();
+    if (zxerr != zxerr_ok) {
+        *tx = 0;
+        THROW(APDU_CODE_DATA_INVALID);
     }
 
     const char *error_msg = tx_parse();
