@@ -19,6 +19,7 @@ import FlareApp from '@zondax/ledger-flare'
 import { models, hdpath, defaultOptions } from './common'
 import secp256k1 from 'secp256k1'
 import { createHash } from 'crypto'
+import { sha256 } from 'js-sha256'
 
 const TEST_DATA = [
   {
@@ -133,6 +134,40 @@ describe.each(models)('Transactions', function (m) {
       const message = createHash('sha256').update(data.blob).digest()
       const signature = new Uint8Array(signatureResponse.signature!)
       const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), new Uint8Array(message), pubKey)
+      expect(valid).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  test.concurrent('sign hash', async function () {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new FlareApp(sim.getTransport())
+
+      const responseAddr = await app.getAddressAndPubKey(hdpath)
+      expect(responseAddr.returnCode).toEqual(0x9000)
+      console.log(responseAddr)
+
+      const pubKeyRaw = new Uint8Array(responseAddr.compressed_pk!)
+      const pubKey = secp256k1.publicKeyConvert(pubKeyRaw, true)
+
+      const text = 'FlareApp'
+      const msg = Buffer.from(sha256(text), 'hex')
+      const signatureRequest = app.signHash(hdpath, msg)
+
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign-hash`)
+
+      const signatureResponse = await signatureRequest
+      console.log(signatureResponse)
+      expect(signatureResponse.returnCode).toEqual(0x9000)
+      expect(signatureResponse.errorMessage).toEqual('No errors')
+
+      // Now verify the signature
+      const signature = new Uint8Array(signatureResponse.signature!)
+      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), msg, pubKey)
       expect(valid).toEqual(true)
     } finally {
       await sim.close()
