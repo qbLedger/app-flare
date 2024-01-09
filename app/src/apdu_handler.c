@@ -26,6 +26,7 @@
 #include "coin.h"
 #include "crypto.h"
 #include "crypto_helper.h"
+#include "hash.h"
 #include "tx.h"
 #include "view.h"
 #include "view_internal.h"
@@ -159,6 +160,26 @@ __Z_INLINE void handleSign(volatile uint32_t *flags, volatile uint32_t *tx, uint
     *flags |= IO_ASYNCH_REPLY;
 }
 
+__Z_INLINE void handleSignHash(volatile uint32_t *flags, volatile uint32_t *tx, uint32_t rx) {
+    zemu_log("handleSignHash\n");
+    if (!process_chunk(tx, rx)) {
+        THROW(APDU_CODE_OK);
+    }
+
+    const char *error_msg = hash_parse();
+    CHECK_APP_CANARY()
+    if (error_msg != NULL) {
+        const int error_msg_length = strnlen(error_msg, sizeof(G_io_apdu_buffer));
+        memcpy(G_io_apdu_buffer, error_msg, error_msg_length);
+        *tx += (error_msg_length);
+        THROW(APDU_CODE_DATA_INVALID);
+    }
+
+    view_review_init(hash_getItem, hash_getNumItems, app_sign_hash);
+    view_review_show(REVIEW_TXN);
+    *flags |= IO_ASYNCH_REPLY;
+}
+
 __Z_INLINE void handle_getversion(__Z_UNUSED volatile uint32_t *flags, volatile uint32_t *tx) {
     G_io_apdu_buffer[0] = 0;
 
@@ -214,6 +235,12 @@ void handleApdu(volatile uint32_t *flags, volatile uint32_t *tx, uint32_t rx) {
                 case INS_SIGN: {
                     CHECK_PIN_VALIDATED()
                     handleSign(flags, tx, rx);
+                    break;
+                }
+
+                case INS_SIGN_HASH: {
+                    CHECK_PIN_VALIDATED()
+                    handleSignHash(flags, tx, rx);
                     break;
                 }
                 default:

@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ******************************************************************************* */
-import { P2_VALUES } from "./consts";
+import { HASH_LEN, INS, P2_VALUES } from "./consts";
 import { ResponseAddress, ResponseSign, FlareIns } from "./types";
 
 import GenericApp, {
@@ -30,7 +30,6 @@ import { processGetAddrResponse, serializeHrp } from "./helper";
 export * from "./types";
 
 export default class FlareApp extends GenericApp {
-  readonly INS!: FlareIns;
   constructor(transport: Transport) {
     if (transport == null) throw new Error("Transport has not been defined");
 
@@ -40,6 +39,7 @@ export default class FlareApp extends GenericApp {
         GET_VERSION: 0x00,
         GET_ADDR: 0x01,
         SIGN: 0x02,
+        SIGN_HASH: 0x03,
       },
       p1Values: {
         ONLY_RETRIEVE: 0x00,
@@ -71,7 +71,7 @@ export default class FlareApp extends GenericApp {
     return this._pubkey(path, true, hrp);
   }
 
-  async signSendChunk(chunkIdx: number, chunkNum: number, chunk: Buffer): Promise<ResponseSign> {
+  async signSendChunk(chunkIdx: number, chunkNum: number, chunk: Buffer, ins: INS): Promise<ResponseSign> {
     let payloadType = PAYLOAD_TYPE.ADD;
     if (chunkIdx === 1) {
       payloadType = PAYLOAD_TYPE.INIT;
@@ -81,7 +81,7 @@ export default class FlareApp extends GenericApp {
     }
 
     return await this.transport
-      .send(this.CLA, this.INS.SIGN, payloadType, 0, chunk, [
+      .send(this.CLA, ins, payloadType, 0, chunk, [
         LedgerError.NoErrors,
         LedgerError.DataIsInvalid,
         LedgerError.BadKeyHandle,
@@ -120,7 +120,7 @@ export default class FlareApp extends GenericApp {
 
   async sign(path: string, message: Buffer): Promise<ResponseSign> {
     const chunks = this.prepareChunks(path, message);
-    return await this.signSendChunk(1, chunks.length, chunks[0]).then(async (response) => {
+    return await this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN).then(async (response) => {
       let result: ResponseSign = {
         returnCode: response.returnCode,
         errorMessage: response.errorMessage,
@@ -128,7 +128,30 @@ export default class FlareApp extends GenericApp {
 
       for (let i = 1; i < chunks.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        result = await this.signSendChunk(1 + i, chunks.length, chunks[i]);
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN);
+        if (result.returnCode !== LedgerError.NoErrors) {
+          break;
+        }
+      }
+      return result;
+    }, processErrorResponse);
+  }
+
+  async signHash(path: string, hash: Buffer): Promise<ResponseSign> {
+    if (hash.length !== HASH_LEN) {
+      throw new Error("Invalid hash length");
+    }
+
+    const chunks = this.prepareChunks(path, hash);
+    return await this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_HASH).then(async (response) => {
+      let result: ResponseSign = {
+        returnCode: response.returnCode,
+        errorMessage: response.errorMessage,
+      };
+
+      for (let i = 1; i < chunks.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_HASH);
         if (result.returnCode !== LedgerError.NoErrors) {
           break;
         }

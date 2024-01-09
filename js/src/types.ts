@@ -4,6 +4,7 @@ export interface FlareIns extends INSGeneric {
   GET_VERSION: 0x00;
   GET_ADDR: 0x01;
   SIGN: 0x02;
+  SIGN_HASH: 0x03;
 }
 
 export interface ResponseAddress extends ResponseBase {
