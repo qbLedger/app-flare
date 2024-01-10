@@ -15,7 +15,9 @@
             "1 | Amount : 10.001 C2FLR",
             "2 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "2 | Address [2/2] : vwcckmr",
-            "3 | Fee : 1 C2FLR"
+            "3 | Fee : 1 C2FLR",
+            "4 | Hash [1/2] : fca356a36fa8ab1b3b6a6a7e5ff58cc7dc82bb",
+            "4 | Hash [2/2] : 09110093c93820fc45d72c776e"
         ]
     },
     {
@@ -44,7 +46,9 @@
             "4 | Amount : 10.001000001 C2FLR",
             "5 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "5 | Address [2/2] : vwcckmr",
-            "6 | Fee : 18446744064.708551615 C2FLR"
+            "6 | Fee : 18446744064.708551615 C2FLR",
+            "7 | Hash [1/2] : d72e803ccb6d9e9a472ad72f3ca2e750375462",
+            "7 | Hash [2/2] : 0a47f8c9dab43cde2a61854857"
         ]
     },
     {
@@ -63,7 +67,9 @@
             "1 | Amount : 10 C2FLR",
             "2 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "2 | Address [2/2] : vwcckmr",
-            "3 | Fee : 0.001 C2FLR"
+            "3 | Fee : 0.001 C2FLR",
+            "4 | Hash [1/2] : b8e2bde38c114bc5052e06bda256e35389c231",
+            "4 | Hash [2/2] : df2e1514c61d52460b7d9e72d2"
         ]
     },
     {
@@ -88,7 +94,9 @@
             "3 | Total stake : 50000 C2FLR",
             "4 | Rewards to [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "4 | Rewards to [2/2] : vwcckmr",
-            "5 | Fee : 0 C2FLR"
+            "5 | Fee : 0 C2FLR",
+            "6 | Hash [1/2] : 31a6ae7a1b013cc42139c6068c6c4e5e0f54f0",
+            "6 | Hash [2/2] : be5e7df8b23994eab6879df943"
         ]
     },
     {
@@ -109,13 +117,15 @@
         "output_expert": [
             "0 | Validator [1/2] : NodeID-BR9YCsrXGVsc8sUoraVrBkWemnPGRSq",
             "0 | Validator [2/2] : YZ",
-            "1 | Start time: 2023-12-07 15:48:39 UTC",
-            "2 | End time: 2023-12-19 14:27:29 UTC",
-            "3 | Total stake: 1000000.1 C2FLR",
+            "1 | Start time : 2023-12-07 15:48:39 UTC",
+            "2 | End time : 2023-12-19 14:27:29 UTC",
+            "3 | Total stake : 1000000.1 C2FLR",
             "4 | Rewards to [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "4 | Rewards to [2/2] : vwcckmr",
-            "5 | Delegate fee: 10 %",
-            "6 | Fee: 0 C2FLR"
+            "5 | Delegate fee : 10 %",
+            "6 | Fee : 0 C2FLR",
+            "7 | Hash [1/2] : 702314ffbbba8be44aafc2da46c8690b54d567",
+            "7 | Hash [2/2] : 28ebd41f9056f89c0ad41f4a40"
         ]
     },
     {
@@ -134,7 +144,9 @@
             "1 | Amount : 1051010 C2FLR",
             "2 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "2 | Address [2/2] : vwcckmr",
-            "3 | Fee : 0.001 C2FLR"
+            "3 | Fee : 0.001 C2FLR",
+            "4 | Hash [1/2] : c4f6fac7b240949e5de67067ca7fe24c868198",
+            "4 | Hash [2/2] : 07aeebee9e29acbfd52cce9ed3"
         ]
     },
     {
@@ -149,10 +161,13 @@
             "3 | Fee : 0.00028075 C2FLR"
         ],
         "output_expert": [
-            "0 | Import : P to C chain",
+            "0 | Import : C from P chain",
+            "1 | Amount : 1051009.99971925 C2FLR",
             "2 | Address [1/2] : 0x5a6a8c28a2fc040df3b7490440c50f00099c",
             "2 | Address [2/2] : 957a",
-            "3 | Fee : 0.00028075 C2FLR"
+            "3 | Fee : 0.00028075 C2FLR",
+            "4 | Hash [1/2] : 6645e6aefb1583eb245cafa615af51b679feae",
+            "4 | Hash [2/2] : e278151d38e8f060c8c756fd10"
         ]
     },
     {
@@ -171,7 +186,9 @@
             "1 | Amount : 1.001 FLR",
             "2 | Address [1/2] : flare1mwy6yvuk8xjl87scxfvvl63xtex3ennv",
             "2 | Address [2/2] : kkpasz",
-            "3 | Fee : 0.00028075 FLR"
+            "3 | Fee : 0.00028075 FLR",
+            "4 | Hash [1/2] : 572e1830c7c59ecc9eadc437c7243224a77ed3",
+            "4 | Hash [2/2] : 85eef2163dc92802e38c494c84"
         ]
     },
     {
@@ -190,7 +207,9 @@
             "1 | Amount : 2.1351 FLR",
             "2 | Address [1/2] : flare1mwy6yvuk8xjl87scxfvvl63xtex3ennv",
             "2 | Address [2/2] : kkpasz",
-            "3 | Fee : 0.01234 FLR"
+            "3 | Fee : 0.01234 FLR",
+            "4 | Hash [1/2] : 033412c293b34e5deff5c497fdf9addb201130",
+            "4 | Hash [2/2] : b920831a9242b23488078d3723"
         ]
     },
     {
@@ -209,7 +228,9 @@
             "1 | Amount : 2.1341 FLR",
             "2 | Address [1/2] : flare1mwy6yvuk8xjl87scxfvvl63xtex3ennv",
             "2 | Address [2/2] : kkpasz",
-            "3 | Fee : 0.001 FLR"
+            "3 | Fee : 0.001 FLR",
+            "4 | Hash [1/2] : ee779397f51a379e7b1719cfc2929aab32321d",
+            "4 | Hash [2/2] : e59a2b745c477abdc6d818601e"
         ]
     },
     {
@@ -228,7 +249,9 @@
             "1 | Amount : 4.2672 FLR",
             "2 | Address [1/2] : flare1mwy6yvuk8xjl87scxfvvl63xtex3ennv",
             "2 | Address [2/2] : kkpasz",
-            "3 | Fee : 0.001 FLR"
+            "3 | Fee : 0.001 FLR",
+            "4 | Hash [1/2] : d275b323622305ae84375e1deb2818e2f4c332",
+            "4 | Hash [2/2] : 724d17eefee674bbe57c9403b1"
         ]
     },
     {
@@ -243,11 +266,13 @@
             "3 | Fee : 0.00030321 FLR"
         ],
         "output_expert": [
-            "0 | Import : P to C chain",
+            "0 | Import : C from P chain",
             "1 | Amount : 4.26689679 FLR",
             "2 | Address [1/2] : 0x5a6a8c28a2fc040df3b7490440c50f00099c",
             "2 | Address [2/2] : 957a",
-            "3 | Fee : 0.00030321 FLR"
+            "3 | Fee : 0.00030321 FLR",
+            "4 | Hash [1/2] : 7eb6bdf75dccc487cca74adc1d5bf84b3d0edc",
+            "4 | Hash [2/2] : 51761c738cd02007490711c639",
         ]
     }
 ]

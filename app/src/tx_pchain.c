@@ -15,6 +15,7 @@
  ********************************************************************************/
 #include "tx_pchain.h"
 
+#include "app_mode.h"
 #include "parser_impl_common.h"
 #include "parser_print_common.h"
 #include "zxformat.h"
@@ -180,7 +181,7 @@ parser_error_t parser_pchain(parser_context_t *c, parser_tx_t *v) {
 
 parser_error_t print_add_del_val_tx(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                                     char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
-    if (ctx->tx_obj->tx_type == add_delegator_tx && displayIdx == 5) {
+    if (ctx->tx_obj->tx_type == add_delegator_tx && displayIdx >= 5) {
         displayIdx += 1;
     }
 
@@ -222,6 +223,11 @@ parser_error_t print_add_del_val_tx(const parser_context_t *ctx, uint8_t display
                 printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
             break;
         default:
+            if (app_mode_expert() && displayIdx == 7) {
+                snprintf(outKey, outKeyLen, "Hash");
+                printHash(ctx, outVal, outValLen, pageIdx, pageCount);
+                return parser_ok;
+            }
             return parser_display_idx_out_of_range;
     }
 
@@ -277,6 +283,15 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         return parser_ok;
     }
 
+    if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
+                          parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) + 1 +
+                          1) {
+        snprintf(outKey, outKeyLen, "Hash");
+        snprintf(outKey, outKeyLen, "Hash");
+        printHash(ctx, outVal, outValLen, pageIdx, pageCount);
+        return parser_ok;
+    }
+
     return parser_display_idx_out_of_range;
 }
 
@@ -327,6 +342,13 @@ parser_error_t print_p_import_tx(const parser_context_t *ctx, uint8_t displayIdx
                        ctx->tx_obj->tx.p_import_tx.base_secp_outs.out_sum;
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
+    }
+
+    if (displayIdx ==
+        ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs + ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_outs + 1 + 1) {
+        snprintf(outKey, outKeyLen, "Hash");
+        printHash(ctx, outVal, outValLen, pageIdx, pageCount);
         return parser_ok;
     }
 

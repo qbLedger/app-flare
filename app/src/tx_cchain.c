@@ -156,6 +156,14 @@ parser_error_t print_c_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         return parser_ok;
     }
 
+    if (displayIdx == ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
+                          parser_get_renderable_outputs_number(ctx->tx_obj->tx.c_export_tx.secp_outs.out_render_mask) + 1 +
+                          1) {
+        snprintf(outKey, outKeyLen, "Hash");
+        printHash(ctx, outVal, outValLen, pageIdx, pageCount);
+        return parser_ok;
+    }
+
     return parser_display_idx_out_of_range;
 }
 
@@ -206,6 +214,12 @@ parser_error_t print_c_import_tx(const parser_context_t *ctx, uint8_t displayIdx
         uint64_t fee = ctx->tx_obj->tx.c_import_tx.secp_inputs.in_sum - ctx->tx_obj->tx.c_import_tx.evm_outs.out_sum;
         CHECK_ERROR(
             printAmount64(fee, AMOUNT_DECIMAL_PLACES, ctx->tx_obj->network_id, outVal, outValLen, pageIdx, pageCount));
+        return parser_ok;
+    }
+
+    if (displayIdx == (2 * ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs) + 1 + 1) {
+        snprintf(outKey, outKeyLen, "Hash");
+        printHash(ctx, outVal, outValLen, pageIdx, pageCount);
         return parser_ok;
     }
 

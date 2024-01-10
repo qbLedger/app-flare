@@ -185,3 +185,22 @@ parser_error_t printNodeId(const uint8_t *nodeId, char *outVal, uint16_t outValL
 
     return parser_ok;
 }
+
+parser_error_t printHash(const parser_context_t *ctx, char *outVal, uint16_t outValLen, uint8_t pageIdx,
+                         uint8_t *pageCount) {
+    unsigned char hash[CX_SHA256_SIZE] = {0};
+
+#if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
+    cx_sha256_t hash_ctx;
+    memset(&hash_ctx, 0, sizeof(hash_ctx));
+    cx_sha256_init_no_throw(&hash_ctx);
+    CHECK_CX_PARSER_OK(cx_hash_no_throw(&hash_ctx.header, CX_LAST, ctx->buffer, ctx->bufferLen, hash, sizeof(hash)));
+#else
+    picohash_ctx_t hash_ctx;
+    picohash_init_sha256(&hash_ctx);
+    picohash_update(&hash_ctx, ctx->buffer, ctx->bufferLen);
+    picohash_final(&hash_ctx, &hash);
+#endif
+    pageStringHex(outVal, outValLen, (const char *)hash, sizeof(hash), pageIdx, pageCount);
+    return parser_ok;
+}

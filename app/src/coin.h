@@ -26,6 +26,7 @@ typedef enum {
     UNSUPPORTED = 0xFF,
 } address_encoding_e;
 
+#define INS_SIGN_HASH 0x3
 #define HDPATH_LEN_DEFAULT 5
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2c)    // 44
 #define HDPATH_1_DEFAULT (0x80000000u | 0x2328)  // 9000
