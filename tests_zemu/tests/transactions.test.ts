@@ -140,6 +140,45 @@ describe.each(models)('Transactions', function (m) {
     }
   })
 
+  test.concurrent.each(TEST_DATA)('Sign transaction expert', async function (data) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new FlareApp(sim.getTransport())
+
+      //Change to expert mode so we can skip fields
+      await sim.toggleExpertMode()
+
+      const responseAddr = await app.getAddressAndPubKey(hdpath)
+      expect(responseAddr.returnCode).toEqual(0x9000)
+      console.log(responseAddr)
+
+      const pubKeyRaw = new Uint8Array(responseAddr.compressed_pk!)
+      const pubKey = secp256k1.publicKeyConvert(pubKeyRaw, true)
+
+      // do not wait here.. we need to navigate
+      const signatureRequest = app.sign(hdpath, data.blob)
+
+      // Wait until we are not in the main menu
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign-${data.name}-expert`)
+
+      const signatureResponse = await signatureRequest
+      console.log(signatureResponse)
+
+      expect(signatureResponse.returnCode).toEqual(0x9000)
+      expect(signatureResponse.errorMessage).toEqual('No errors')
+
+      // Now verify the signature
+      const message = createHash('sha256').update(data.blob).digest()
+      const signature = new Uint8Array(signatureResponse.signature!)
+      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), new Uint8Array(message), pubKey)
+      expect(valid).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
   test.concurrent('sign hash', async function () {
     const sim = new Zemu(m.path)
     try {
