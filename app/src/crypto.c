@@ -68,7 +68,7 @@ __Z_INLINE zxerr_t compressPubkey(const uint8_t *pubkey, uint16_t pubkeyLen, uin
     return zxerr_ok;
 }
 
-zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize) {
+zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize, bool hash) {
     if (signature == NULL || sigSize == NULL) {
         return zxerr_invalid_crypto_settings;
     }
@@ -78,7 +78,11 @@ zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigS
     // Hash it
     const uint8_t *message = tx_get_buffer();
     const uint16_t messageLen = tx_get_buffer_length();
-    crypto_sha256(message, messageLen, messageDigest, CX_SHA256_SIZE);
+    if (!hash) {
+        crypto_sha256(message, messageLen, messageDigest, CX_SHA256_SIZE);
+    } else {
+        MEMCPY(messageDigest, message, messageLen);
+    }
 
     cx_ecfp_private_key_t cx_privateKey = {0};
     uint8_t privateKeyData[64] = {0};
