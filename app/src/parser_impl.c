@@ -155,34 +155,35 @@ parser_error_t _read(parser_context_t *ctx, parser_tx_t *v) {
 
 parser_error_t getNumItems(const parser_context_t *ctx, uint8_t *numItems) {
     *numItems = 0;
+    const uint8_t expertModeHashField = app_mode_expert() ? 1 : 0;
     switch (ctx->tx_obj->tx_type) {
         case p_export_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
             *numItems = 2 + ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
                         parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) +
-                        (app_mode_expert() ? 1 : 0);
+                        expertModeHashField;
             break;
         case p_import_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
             *numItems = 2 + ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs +
                         parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_import_tx.base_secp_outs.out_render_mask) +
-                        (app_mode_expert() ? 1 : 0);
+                        expertModeHashField;
             break;
         case c_export_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
             *numItems = 2 + ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
                         parser_get_renderable_outputs_number(ctx->tx_obj->tx.c_export_tx.secp_outs.out_render_mask) +
-                        (app_mode_expert() ? 1 : 0);
+                        expertModeHashField;
             break;
         case c_import_tx:
             // Tx + fee + (amount + address) * n_outs
-            *numItems = 2 + (2 * ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs) + (app_mode_expert() ? 1 : 0);
+            *numItems = 2 + (2 * ctx->tx_obj->tx.c_import_tx.evm_outs.n_outs) + expertModeHashField;
             break;
         case add_delegator_tx:
-            *numItems = 6 + (app_mode_expert() ? 1 : 0);
+            *numItems = 6 + expertModeHashField;
             break;
         case add_validator_tx:
-            *numItems = 7 + (app_mode_expert() ? 1 : 0);
+            *numItems = 7 + expertModeHashField;
             break;
         default:
             break;

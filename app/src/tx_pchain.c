@@ -287,7 +287,6 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
                           parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) + 1 +
                           1) {
         snprintf(outKey, outKeyLen, "Hash");
-        snprintf(outKey, outKeyLen, "Hash");
         printHash(ctx, outVal, outValLen, pageIdx, pageCount);
         return parser_ok;
     }

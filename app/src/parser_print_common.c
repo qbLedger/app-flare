@@ -193,7 +193,7 @@ parser_error_t printHash(const parser_context_t *ctx, char *outVal, uint16_t out
 #if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
     cx_sha256_t hash_ctx;
     memset(&hash_ctx, 0, sizeof(hash_ctx));
-    cx_sha256_init_no_throw(&hash_ctx);
+    CHECK_CX_PARSER_OK(cx_sha256_init_no_throw(&hash_ctx));
     CHECK_CX_PARSER_OK(cx_hash_no_throw(&hash_ctx.header, CX_LAST, ctx->buffer, ctx->bufferLen, hash, sizeof(hash)));
 #else
     picohash_ctx_t hash_ctx;
