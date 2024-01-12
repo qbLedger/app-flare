@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 #define CLA 0x58
+#define CLA_ETH 0xE0
 
 typedef enum {
     BECH32 = 0,
@@ -27,9 +28,14 @@ typedef enum {
 } address_encoding_e;
 
 #define INS_SIGN_HASH 0x3
+#define MAX_BIP32_PATH 10
 #define HDPATH_LEN_DEFAULT 5
+
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2c)    // 44
 #define HDPATH_1_DEFAULT (0x80000000u | 0x2328)  // 9000
+
+#define HDPATH_ETH_0_DEFAULT (0x80000000u | 0x2cu)
+#define HDPATH_ETH_1_DEFAULT (0x80000000u | 0x3cu)
 
 #define HDPATH_2_DEFAULT (0x80000000u | 0u)
 #define HDPATH_3_DEFAULT (0u)
@@ -39,6 +45,8 @@ typedef enum {
 
 #define PK_LEN_SECP256K1 33u
 #define VIEW_ADDRESS_OFFSET_SECP256K1 PK_LEN_SECP256K1
+// omit the pubkey + 1-byte pubkey len + 1-byte address len
+#define VIEW_ADDRESS_OFFSET_ETH (SECP256K1_PK_LEN + 1 + 1)
 #define SK_LEN_25519 64u
 #define SCALAR_LEN_ED25519 32u
 #define SIG_PLUS_TYPE_LEN 65u
@@ -48,6 +56,20 @@ typedef enum {
 
 #define COIN_AMOUNT_DECIMAL_PLACES 6
 #define COIN_TICKER "FLR "
+
+// transaction is sent as a blob of rlp encoded bytes,
+#define P1_ETH_FIRST 0x00
+#define P1_ETH_MORE 0x80
+// eth address chain_code allowed valuec
+#define P2_NO_CHAINCODE 0x00
+#define P2_CHAINCODE 0x01
+
+#define SECP256K1_SK_LEN 64u
+#define SECP256K1_PK_LEN 65u
+#define ETH_ADDR_LEN 20u
+
+#define INS_SIGN_ETH 0x04
+#define INS_GET_ADDR_ETH 0x02
 
 #define MENU_MAIN_APP_LINE1 "Flare"
 #define MENU_MAIN_APP_LINE2 "Ready"

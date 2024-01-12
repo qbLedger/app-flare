@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   (c) 2018 - 2023 Zondax AG
+ *   (c) 2023 Zondax AG
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,24 +20,12 @@
 extern "C" {
 #endif
 
-#include <sigutils.h>
-#include <stdbool.h>
+/// Return the number of items in the address view
+zxerr_t eth_addr_getNumItems(uint8_t *num_items);
 
-#include "coin.h"
-#include "zxerror.h"
-
-extern uint32_t hdPath[HDPATH_LEN_DEFAULT];
-extern uint32_t hdPath_len;
-extern uint8_t change_address[20];
-
-zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen, uint16_t *addrResponseLen);
-zxerr_t crypto_fillEthAddress(uint8_t *buffer, uint16_t buffer_len, uint16_t *addrLen);
-
-zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize, bool hash);
-zxerr_t crypto_sign_eth(uint8_t *buffer, uint16_t signatureMaxlen, const uint8_t *message, uint16_t messageLen,
-                        uint16_t *sigSize);
-
-zxerr_t crypto_get_address(void);
+/// Gets an specific item from the address view (including paging)
+zxerr_t eth_addr_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen, char *outValue, uint16_t outValueLen,
+                         uint8_t pageIdx, uint8_t *pageCount);
 
 #ifdef __cplusplus
 }
