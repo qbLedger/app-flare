@@ -14,8 +14,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ******************************************************************************* */
-import { HASH_LEN, INS, P2_VALUES } from "./consts";
+import Eth from "@ledgerhq/hw-app-eth";
+import { APP_KEY, HASH_LEN, INS, P2_VALUES } from "./consts";
 import { ResponseAddress, ResponseSign, FlareIns } from "./types";
+import { LedgerEthTransactionResolution, LoadConfig } from "@ledgerhq/hw-app-eth/lib/services/types";
 
 import GenericApp, {
   ConstructorParams,
@@ -30,7 +32,8 @@ import { processGetAddrResponse, serializeHrp } from "./helper";
 export * from "./types";
 
 export default class FlareApp extends GenericApp {
-  constructor(transport: Transport) {
+  private eth;
+  constructor(transport: Transport, scrambleKey = APP_KEY, ethScrambleKey = "w0w", ethLoadConfig = {}) {
     if (transport == null) throw new Error("Transport has not been defined");
 
     const params: ConstructorParams = {
@@ -49,6 +52,7 @@ export default class FlareApp extends GenericApp {
       chunkSize: 250,
     };
     super(transport, params);
+    this.eth = new Eth(transport as any, ethScrambleKey, ethLoadConfig);
   }
 
   async _pubkey(path: string, show = true, hrp?: string): Promise<ResponseAddress> {
@@ -158,5 +162,13 @@ export default class FlareApp extends GenericApp {
       }
       return result;
     }, processErrorResponse);
+  }
+
+  async signETHTransaction(path: any, rawTxHex: any, resolution?: LedgerEthTransactionResolution | null) {
+    return this.eth.signTransaction(path, rawTxHex, resolution);
+  }
+
+  async getETHAddress(path: any, boolDisplay: any, boolChaincode?: boolean) {
+    return this.eth.getAddress(path, boolDisplay, boolChaincode);
   }
 }
