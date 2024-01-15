@@ -1,0 +1,352 @@
+[
+  {
+    "description": "erc20_transfer_000",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x0b5d498e42bc84419297e59d0e034084239db0e5",
+      "Value": "WFLR 401.825595058214600704",
+      "Nonce": "4589",
+      "GasPrice": "353964599747",
+      "GasLimit": "2044771"
+    },
+    "encoded_tx_hex": "f86c8211ed855269ef29c3831f3363940b5d498e42bc84419297e59d0e034084239db0e580b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000015c87349be00d700000e8080"
+  },
+  {
+    "description": "erc20_transfer_001",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x862275872ee6558b9ffbd6fa9d7b001af87bd6c9",
+      "Value": "WFLR 110.98296156850118656",
+      "Nonce": "3668",
+      "GasPrice": "361036118799",
+      "GasLimit": "1809697"
+    },
+    "encoded_tx_hex": "f86c820e5485540f6dfb0f831b9d2194862275872ee6558b9ffbd6fa9d7b001af87bd6c980b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000060432af889b57c0000e8080"
+  },
+  {
+    "description": "erc20_transfer_002",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x0cdfdce665b715ab611dd1dffe49b40cae2edd6c",
+      "Value": "WFLR 294.995067613636591616",
+      "Nonce": "3660",
+      "GasPrice": "453254795404",
+      "GasLimit": "2619878"
+    },
+    "encoded_tx_hex": "f86c820e4c85698817508c8327f9e6940cdfdce665b715ab611dd1dffe49b40cae2edd6c80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000ffde1030b332600000e8080"
+  },
+  {
+    "description": "erc20_transfer_003",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xb970dc1e20afe2afc9ffeeddb6d5b651aa7665f7",
+      "Value": "WFLR 41.261113472353615872",
+      "Nonce": "4060",
+      "GasPrice": "265778061825",
+      "GasLimit": "1560432"
+    },
+    "encoded_tx_hex": "f86c820fdc853de19b62018317cf7094b970dc1e20afe2afc9ffeeddb6d5b651aa7665f780b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000023c9cec17a4b8c0000e8080"
+  },
+  {
+    "description": "erc20_transfer_004",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xee5d57b44620e6e2ae42c45dbac4fd2173dda311",
+      "Value": "WFLR 254.639916948645281792",
+      "Nonce": "1047",
+      "GasPrice": "290362428199",
+      "GasLimit": "1989394"
+    },
+    "encoded_tx_hex": "f86c82041785439af30b27831e5b1294ee5d57b44620e6e2ae42c45dbac4fd2173dda31180b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000dcdd6b7531ef900000e8080"
+  },
+  {
+    "description": "erc20_transfer_005",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xb3ba02fbb392d5495f25fd23fb9d0c67c46a2ec4",
+      "Value": "WFLR 330.782696192316145664",
+      "Nonce": "1385",
+      "GasPrice": "291834889423",
+      "GasLimit": "2810431"
+    },
+    "encoded_tx_hex": "f86c8205698543f2b704cf832ae23f94b3ba02fbb392d5495f25fd23fb9d0c67c46a2ec480b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000011ee8835a004f600000e8080"
+  },
+  {
+    "description": "erc20_transfer_006",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xf08fe9cb0e43a8fff39b9aad0824aa33d7b37a43",
+      "Value": "WFLR 294.8252385563123712",
+      "Nonce": "2065",
+      "GasPrice": "384061433157",
+      "GasLimit": "2077598"
+    },
+    "encoded_tx_hex": "f86c82081185596bd86545831fb39e94f08fe9cb0e43a8fff39b9aad0824aa33d7b37a4380b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000ffb85a86a78cc80000e8080"
+  },
+  {
+    "description": "erc20_transfer_007",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x5b54887673a8dca081bf0ff2b458122a1b77b7f8",
+      "Value": "WFLR 102.919281153813659648",
+      "Nonce": "1692",
+      "GasPrice": "302227880910",
+      "GasLimit": "2848321"
+    },
+    "encoded_tx_hex": "f86c82069c85465e2f7bce832b7641945b54887673a8dca081bf0ff2b458122a1b77b7f880b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000005944abceb6f9e40000e8080"
+  },
+  {
+    "description": "erc20_transfer_008",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xa60a05fc0d1c44407e67e5e44d1a1f3e0da62486",
+      "Value": "WFLR 82.05470812026748928",
+      "Nonce": "4486",
+      "GasPrice": "361259482440",
+      "GasLimit": "1771349"
+    },
+    "encoded_tx_hex": "f86c82118685541cbe3d48831b075594a60a05fc0d1c44407e67e5e44d1a1f3e0da6248680b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000472bce24a78e780000e8080"
+  },
+  {
+    "description": "erc20_transfer_009",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x43a6994745875e59224cb4f138b278387d04528f",
+      "Value": "WFLR 132.208934700512100352",
+      "Nonce": "2775",
+      "GasPrice": "345389831604",
+      "GasLimit": "2752435"
+    },
+    "encoded_tx_hex": "f86c820ad785506ad695b48329ffb39443a6994745875e59224cb4f138b278387d04528f80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000072ac47da31cd6c0000e8080"
+  },
+  {
+    "description": "erc20_transfer_010",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x81a322ee276d3f19e7fd18fef3a08ca10c5d6c8d",
+      "Value": "WFLR 225.971482814371397632",
+      "Nonce": "105",
+      "GasPrice": "414695204044",
+      "GasLimit": "2898178"
+    },
+    "encoded_tx_hex": "f86a6985608dc2a4cc832c39029481a322ee276d3f19e7fd18fef3a08ca10c5d6c8d80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000c3ffbfa5f16e500000e8080"
+  },
+  {
+    "description": "erc20_transfer_011",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xb4d012f8b45e26e6b5f45248d6d0692b036a8e54",
+      "Value": "WFLR 411.302068390146146304",
+      "Nonce": "606",
+      "GasPrice": "368950218542",
+      "GasLimit": "2636383"
+    },
+    "encoded_tx_hex": "f86c82025e8555e7258f2e83283a5f94b4d012f8b45e26e6b5f45248d6d0692b036a8e5480b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000164bf67c07721500000e8080"
+  },
+  {
+    "description": "erc20_transfer_012",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xe9add34827e46eb0ba21c6aba4ee915a88d367e2",
+      "Value": "WFLR 176.89910350004699136",
+      "Nonce": "4724",
+      "GasPrice": "287409229799",
+      "GasLimit": "2632058"
+    },
+    "encoded_tx_hex": "f86c8212748542eaeccfe78328297a94e9add34827e46eb0ba21c6aba4ee915a88d367e280b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000996f7dd61b55c80000e8080"
+  },
+  {
+    "description": "erc20_transfer_013",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x011b6ce1e4dfe2b0c52ba2d3664ebee965daa43e",
+      "Value": "WFLR 376.069168132470734848",
+      "Nonce": "3062",
+      "GasPrice": "424926091982",
+      "GasLimit": "2185206"
+    },
+    "encoded_tx_hex": "f86c820bf68562ef919ace832157f694011b6ce1e4dfe2b0c52ba2d3664ebee965daa43e80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000014630213eaa89200000e8080"
+  },
+  {
+    "description": "erc20_transfer_014",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xae8bce79b70b629964aa285313acd8bc9206612b",
+      "Value": "WFLR 431.391894318789885952",
+      "Nonce": "3544",
+      "GasPrice": "264646661617",
+      "GasLimit": "1789259"
+    },
+    "encoded_tx_hex": "f86c820dd8853d9e2b95f1831b4d4b94ae8bce79b70b629964aa285313acd8bc9206612b80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000001762c3e2454e5300000e8080"
+  },
+  {
+    "description": "erc20_transfer_015",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x4c0070d8e849463d4009df60918c855786227b91",
+      "Value": "WFLR 218.42999196603219968",
+      "Nonce": "4120",
+      "GasPrice": "284088987726",
+      "GasLimit": "2210779"
+    },
+    "encoded_tx_hex": "f86c82101885422505f04e8321bbdb944c0070d8e849463d4009df60918c855786227b9180b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000bd7533866c2c700000e8080"
+  },
+  {
+    "description": "erc20_transfer_016",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x5084e7f046d1564e19b84e4986711abdf7a3322b",
+      "Value": "WFLR 32.463564285318270976",
+      "Nonce": "4275",
+      "GasPrice": "243627941500",
+      "GasLimit": "2754628"
+    },
+    "encoded_tx_hex": "f86c8210b38538b95b5e7c832a0844945084e7f046d1564e19b84e4986711abdf7a3322b80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000001c285bfb7d97410000e8080"
+  },
+  {
+    "description": "erc20_transfer_017",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xca540724f1c05711a610ffedb6d575b0a56644a7",
+      "Value": "WFLR 68.5207856024805376",
+      "Nonce": "4",
+      "GasPrice": "440155257758",
+      "GasLimit": "2996596"
+    },
+    "encoded_tx_hex": "f86a0485667b4c3b9e832db97494ca540724f1c05711a610ffedb6d575b0a56644a780b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000003b6eabb777e8d80000e8080"
+  },
+  {
+    "description": "erc20_transfer_018",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xb827b29c60bbd12bcb2660da637209f7ae8a81dc",
+      "Value": "WFLR 77.053013805747470336",
+      "Nonce": "4569",
+      "GasPrice": "275204551873",
+      "GasLimit": "2937768"
+    },
+    "encoded_tx_hex": "f86c8211d98540137834c1832cd3a894b827b29c60bbd12bcb2660da637209f7ae8a81dc80b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000042d534bcfdcd900000e8080"
+  },
+  {
+    "description": "erc20_transfer_019",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xa9dfc2003d38da67a44f7287812b88d1f0dd6dc1",
+      "Value": "WFLR 429.65170560560463872",
+      "Nonce": "4715",
+      "GasPrice": "291622101225",
+      "GasLimit": "1762090"
+    },
+    "encoded_tx_hex": "f86c82126b8543e60820e9831ae32a94a9dfc2003d38da67a44f7287812b88d1f0dd6dc180b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d0000000000000000000000000000000000000000000000174a9d7ddb22c600000e8080"
+  },
+  {
+    "description": "erc20_transfer_020",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0xfc51c6189bbe1a31bfd075811875d4c4feb2c0c3",
+      "Value": "WFLR 346.783602867829276672",
+      "Nonce": "2929",
+      "GasPrice": "245540649676",
+      "GasLimit": "1760642"
+    },
+    "encoded_tx_hex": "f86c820b7185392b5cfacc831add8294fc51c6189bbe1a31bfd075811875d4c4feb2c0c380b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000012cc96d978531900000e8080"
+  },
+  {
+    "description": "erc20_transfer_021",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x010eb4036f2a02a09f59b32f15483a12555cc939",
+      "Value": "WFLR 406.168445833597026304",
+      "Nonce": "2350",
+      "GasPrice": "431349010493",
+      "GasLimit": "2390203"
+    },
+    "encoded_tx_hex": "f86c82092e85646e67903d832478bb94010eb4036f2a02a09f59b32f15483a12555cc93980b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000001604b83183540a00000e8080"
+  },
+  {
+    "description": "erc20_transfer_022",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x29f21b59ff719ee4ab487b024fd70a44081beff1",
+      "Value": "WFLR 286.61953700668342272",
+      "Nonce": "257",
+      "GasPrice": "347130518656",
+      "GasLimit": "2856028"
+    },
+    "encoded_tx_hex": "f86c8201018550d2975c80832b945c9429f21b59ff719ee4ab487b024fd70a44081beff180b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000000f89a526550a4b00000e8080"
+  },
+  {
+    "description": "erc20_transfer_023",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x53aba6463be482c79dd3ae819d7f4e9bb0e50ca2",
+      "Value": "WFLR 4.85816252910065152",
+      "Nonce": "1544",
+      "GasPrice": "442041416023",
+      "GasLimit": "2315177"
+    },
+    "encoded_tx_hex": "f86c8206088566ebb8b957832353a99453aba6463be482c79dd3ae819d7f4e9bb0e50ca280b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d000000000000000000000000000000000000000000000000436ba914a0285c000e8080"
+  },
+  {
+    "description": "erc20_transfer_024",
+    "encoded_tx": "",
+    "valid": true,
+    "error": "",
+    "message": {
+      "To": "0x86359a9c6ee6feb3302ed37507cbb69e362d5e44",
+      "Value": "WFLR 396.655257486225178624",
+      "Nonce": "3661",
+      "GasPrice": "449560504702",
+      "GasLimit": "2295829"
+    },
+    "encoded_tx_hex": "f86c820e4d8568abe4e97e832308159486359a9c6ee6feb3302ed37507cbb69e362d5e4480b844a9059cbb0000000000000000000000001d80c49bbbcd1c0911346656b529df9e5c2f783d00000000000000000000000000000000000000000000001580b28f1d358e00000e8080"
+  }
+]
