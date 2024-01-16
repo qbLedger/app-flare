@@ -71,7 +71,7 @@ typedef enum {
 #define INS_SIGN_ETH 0x04
 #define INS_GET_ADDR_ETH 0x02
 
-#define MENU_MAIN_APP_LINE1 "Flare"
+#define MENU_MAIN_APP_LINE1 "Flare Network"
 #define MENU_MAIN_APP_LINE2 "Ready"
 #define MENU_MAIN_APP_LINE2_SECRET "???"
 #define APPVERSION_LINE1 "Flare"
