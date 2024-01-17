@@ -26,7 +26,7 @@ extern "C" {
 #include "coin.h"
 #include "zxerror.h"
 
-extern uint32_t hdPath[HDPATH_LEN_DEFAULT];
+extern uint32_t hdPath[MAX_BIP32_PATH];
 extern uint32_t hdPath_len;
 extern uint8_t change_address[20];
 

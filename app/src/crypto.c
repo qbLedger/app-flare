@@ -23,7 +23,7 @@
 #include "zxformat.h"
 #include "zxmacros.h"
 
-uint32_t hdPath[HDPATH_LEN_DEFAULT];
+uint32_t hdPath[MAX_BIP32_PATH];
 uint32_t hdPath_len;
 uint8_t change_address[20];
 #include <bech32.h>
