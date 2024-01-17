@@ -39,8 +39,8 @@ include $(CURDIR)/Makefile.version
 $(info COIN  = [$(COIN)])
 
 ifeq ($(COIN),FLR)
-APPNAME = "Flare"
-APPPATH = "44'/9000'"
+APPNAME = "Flare Network"
+APPPATH = "44'/9000'" --path "44'/60'"
 else
 define error_message
 

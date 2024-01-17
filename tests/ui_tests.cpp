@@ -22,19 +22,13 @@
 #include <iostream>
 
 #include "app_mode.h"
+#include "expected_output.h"
 #include "gmock/gmock.h"
 #include "parser.h"
+#include "testcases.h"
 #include "utils/common.h"
 
 using ::testing::TestWithParam;
-
-typedef struct {
-    uint64_t index;
-    std::string name;
-    std::string blob;
-    std::vector<std::string> expected;
-    std::vector<std::string> expected_expert;
-} testcase_t;
 
 class JsonTestsA : public ::testing::TestWithParam<testcase_t> {
    public:
@@ -86,10 +80,52 @@ std::vector<testcase_t> GetJsonTestCases(std::string jsonFile) {
     return answer;
 }
 
-void check_testcase(const testcase_t &tc, bool expert_mode) {
+std::string CleanTestname(std::string s) {
+    s.erase(remove_if(s.begin(), s.end(),
+                      [](char v) -> bool {
+                          return v == ':' || v == ' ' || v == '/' || v == '-' || v == '.' || v == '_' || v == '#';
+                      }),
+            s.end());
+    return s;
+}
+
+// Retrieve testcases from json file
+template <typename Generator>
+std::vector<testcase_t> GetEVMJsonTestCases(const std::string &jsonFile, Generator gen_ui_output) {
+    auto answer = std::vector<testcase_t>();
+
+    Json::CharReaderBuilder builder;
+    Json::Value obj;
+
+    std::string fullPathJsonFile = std::string(TESTVECTORS_DIR) + jsonFile;
+
+    std::ifstream inFile(fullPathJsonFile);
+    if (!inFile.is_open()) {
+        return answer;
+    }
+
+    // Retrieve all test cases
+    JSONCPP_STRING errs;
+    Json::parseFromStream(builder, inFile, &obj, &errs);
+    std::cout << "Number of testcases: " << obj.size() << std::endl;
+
+    for (auto &i : obj) {
+        // auto outputs = GenerateExpectedUIOutput(i, false);
+        // auto outputs_expert = GenerateExpectedUIOutput(i, true);
+        auto outputs = gen_ui_output(i, false);
+        auto outputs_expert = gen_ui_output(i, true);
+
+        auto name = CleanTestname(i["description"].asString());
+
+        answer.push_back(testcase_t{answer.size() + 1, name, i["encoded_tx_hex"].asString(), outputs, outputs_expert});
+    }
+
+    return answer;
+}
+
+void check_testcase(const testcase_t &tc, bool expert_mode, parser_context_t ctx) {
     app_mode_set_expert(expert_mode);
 
-    parser_context_t ctx;
     parser_error_t err;
 
     uint8_t buffer[5000];
@@ -119,9 +155,27 @@ void check_testcase(const testcase_t &tc, bool expert_mode) {
     }
 }
 
-INSTANTIATE_TEST_SUITE_P
+void check_testcase_flr(const testcase_t &tc, bool a) {
+    parser_context_t ctx;
+    ctx.tx_type = flr_tx;
+    check_testcase(tc, a, ctx);
+}
 
-    (JsonTestCasesCurrentTxVer, JsonTestsA, ::testing::ValuesIn(GetJsonTestCases("testcases.json")),
-     JsonTestsA::PrintToStringParamName());
-TEST_P(JsonTestsA, JsonTestsA_CheckUIOutput_CurrentTX_Normal) { check_testcase(GetParam(), false); }
-TEST_P(JsonTestsA, JsonTestsA_CheckUIOutput_CurrentTX_Expert) { check_testcase(GetParam(), true); }
+void check_testcase_eth(const testcase_t &tc, bool a) {
+    parser_context_t ctx;
+    ctx.tx_type = eth_tx;
+    check_testcase(tc, a, ctx);
+}
+
+class VerifyEvmTransactions : public JsonTestsA {};
+
+INSTANTIATE_TEST_SUITE_P(JsonTestCasesCurrentTxVer, JsonTestsA,
+                         ::testing::ValuesIn(GetJsonTestCases("testvectors/testcases.json")),
+                         JsonTestsA::PrintToStringParamName());
+INSTANTIATE_TEST_SUITE_P(EVMJsonTestCasesCurrentTxVer, VerifyEvmTransactions,
+                         ::testing::ValuesIn(GetEVMJsonTestCases("testvectors/evm.json", EVMGenerateExpectedUIOutput)),
+                         JsonTestsA::PrintToStringParamName());
+
+TEST_P(JsonTestsA, JsonTestsA_CheckUIOutput_CurrentTX_Normal) { check_testcase_flr(GetParam(), false); }
+TEST_P(JsonTestsA, JsonTestsA_CheckUIOutput_CurrentTX_Expert) { check_testcase_flr(GetParam(), true); }
+TEST_P(VerifyEvmTransactions, JsonTestsEVM_CheckUIOutput_CurrentTX_Normal) { check_testcase_eth(GetParam(), false); }
