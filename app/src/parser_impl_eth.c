@@ -41,9 +41,11 @@ static parser_error_t readChainID(parser_context_t *ctx, rlp_t *chainId) {
     uint64_t tmpChainId = 0;
     if (chainId->rlpLen > 0) {
         CHECK_ERROR(be_bytes_to_u64(chainId->ptr, chainId->rlpLen, &tmpChainId))
-    } else {
+    } else if (chainId->kind == RLP_KIND_BYTE) {
         // case were the prefix is the byte itself
         tmpChainId = chainId->ptr[0];
+    } else {
+        return parser_unexpected_error;
     }
 
     // Check allowed values for chain id

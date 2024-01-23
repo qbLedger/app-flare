@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
+
 #include <coin.h>
 #include <fmt/core.h>
 
@@ -28,7 +29,7 @@ void addTo(std::vector<std::string> &answer, const S &format_str, Args &&...args
     answer.push_back(fmt::format(format_str, args...));
 }
 
-std::vector<std::string> FormatEthAddress(const uint32_t idx, const std::string &name, const std::string &address) {
+std::vector<std::string> FormatEthAddress(const std::string &name, const uint32_t idx, const std::string &address) {
     auto answer = std::vector<std::string>();
     uint8_t numPages = 0;
     char outBuffer[100];
@@ -72,12 +73,12 @@ std::vector<std::string> EVMGenerateExpectedUIOutput(const Json::Value &json, bo
     ///
 
     uint8_t idx = 0;
-    auto destAddress = FormatEthAddress(idx, "To", to);
+    auto destAddress = FormatEthAddress("To", idx, to);
     answer.insert(answer.end(), destAddress.begin(), destAddress.end());
 
     if (value.compare(0, 2, "??") == 0) {
         idx++;
-        auto contractAddress = FormatEthAddress(idx, "Contract", contract);
+        auto contractAddress = FormatEthAddress("Contract", idx, contract);
         answer.insert(answer.end(), contractAddress.begin(), contractAddress.end());
     }
 

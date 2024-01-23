@@ -197,6 +197,7 @@ bool parser_output_contains_change_address(parser_context_t *c) {
     bool contains = false;
     // verify address is renderable  compare with CHANGE ADDRESS
 #if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
+    CTX_CHECK_AVAIL(c, ADDRESS_LEN)
     if (MEMCMP(c->buffer + c->offset, change_address, ADDRESS_LEN) == 0) {
         contains = false;
     } else {
@@ -205,6 +206,8 @@ bool parser_output_contains_change_address(parser_context_t *c) {
 #else
     uint8_t test_change_address[ADDRESS_LEN] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
                                                 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
+
+    CTX_CHECK_AVAIL(c, ADDRESS_LEN)
     if (MEMCMP(c->buffer + c->offset, test_change_address, ADDRESS_LEN) == 0) {
         contains = false;
     } else {
