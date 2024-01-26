@@ -13,5 +13,7 @@ export interface ResponseAddress extends ResponseBase {
 }
 
 export interface ResponseSign extends ResponseBase {
-  signature?: Buffer;
+  r?: Buffer;
+  s?: Buffer;
+  v?: Buffer;
 }

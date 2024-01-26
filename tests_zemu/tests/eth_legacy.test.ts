@@ -137,7 +137,7 @@ describe.each(models)('ETH_Legacy', function (m) {
       const msg = rawUnsignedLegacyTransaction(data.op, data.chainId)
       console.log('tx: ', msg.toString('hex'))
 
-      const respReq = app.signETHTransaction(ETH_PATH, msg.toString('hex'), null)
+      const respReq = app.signEVMTransaction(ETH_PATH, msg.toString('hex'), null)
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
       await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-eth-${data.name}`)
 

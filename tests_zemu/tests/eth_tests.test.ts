@@ -100,7 +100,7 @@ describe.each(models)('ETH', function (m) {
       const EXPECTED_PUBLIC_KEY = '024f1dd50f180bfd546339e75410b127331469837fa618d950f7cfb8be351b0020'
 
       // do not wait here..
-      const signatureRequest = app.signETHTransaction(ETH_PATH, msg, null)
+      const signatureRequest = app.signEVMTransaction(ETH_PATH, msg, null)
       // Wait until we are not in the main menu
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
 
@@ -134,7 +134,7 @@ describe('EthAddress', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new FilecoinApp(sim.getTransport())
 
-      const resp = await app.getETHAddress(ETH_PATH, false, true)
+      const resp = await app.getEVMAddress(ETH_PATH, false, true)
 
       console.log(resp)
 
@@ -159,7 +159,7 @@ describe('EthAddress', function () {
       })
       const app = new FilecoinApp(sim.getTransport())
 
-      const resp = app.getETHAddress(ETH_PATH, true)
+      const resp = app.getEVMAddress(ETH_PATH, true)
 
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
 

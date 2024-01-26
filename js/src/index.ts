@@ -96,7 +96,9 @@ export default class FlareApp extends GenericApp {
         const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
         let errorMessage = errorCodeToString(returnCode);
 
-        let signature = Buffer.alloc(0);
+        let r = Buffer.alloc(0);
+        let s = Buffer.alloc(0);
+        let v = Buffer.alloc(0);
 
         if (
           returnCode === LedgerError.BadKeyHandle ||
@@ -106,10 +108,14 @@ export default class FlareApp extends GenericApp {
           errorMessage = `${errorMessage} : ${response.subarray(0, response.length - 2).toString("ascii")}`;
         }
 
-        if (returnCode === LedgerError.NoErrors && response.length > 2) {
-          signature = response.slice(0, response.length - 2);
+        if (returnCode === LedgerError.NoErrors && response.length >= 65) {
+          r = response.subarray(0, 32);
+          s = response.subarray(32, 64);
+          v = response.subarray(64, 65);
           return {
-            signature,
+            r,
+            s,
+            v,
             returnCode,
             errorMessage,
           };
@@ -164,11 +170,11 @@ export default class FlareApp extends GenericApp {
     }, processErrorResponse);
   }
 
-  async signETHTransaction(path: any, rawTxHex: any, resolution?: LedgerEthTransactionResolution | null) {
+  async signEVMTransaction(path: any, rawTxHex: any, resolution?: LedgerEthTransactionResolution | null) {
     return this.eth.signTransaction(path, rawTxHex, resolution);
   }
 
-  async getETHAddress(path: any, boolDisplay: any, boolChaincode?: boolean) {
+  async getEVMAddress(path: any, boolDisplay: any, boolChaincode?: boolean) {
     return this.eth.getAddress(path, boolDisplay, boolChaincode);
   }
 }
