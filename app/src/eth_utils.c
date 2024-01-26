@@ -139,7 +139,7 @@ parser_error_t printRLPNumber(const rlp_t *num, char *outVal, uint16_t outValLen
 }
 
 parser_error_t printEVMAddress(const rlp_t *address, char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
-    if (address == NULL || outVal == NULL || pageCount == NULL || address->rlpLen != ETH_ADDR_LEN) {
+    if (address == NULL || outVal == NULL || address->ptr == NULL || pageCount == NULL || address->rlpLen != ETH_ADDR_LEN) {
         return parser_unexpected_error;
     }
 
