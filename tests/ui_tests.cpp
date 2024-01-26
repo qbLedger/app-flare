@@ -47,10 +47,10 @@ class JsonTestsA : public ::testing::TestWithParam<testcase_t> {
 std::vector<testcase_t> GetJsonTestCases(std::string jsonFile) {
     auto answer = std::vector<testcase_t>();
 
-    Json::CharReaderBuilder builder;
+    const Json::CharReaderBuilder builder;
     Json::Value obj;
 
-    std::string fullPathJsonFile = std::string(TESTVECTORS_DIR) + jsonFile;
+    const std::string fullPathJsonFile = std::string(TESTVECTORS_DIR) + jsonFile;
 
     std::ifstream inFile(fullPathJsonFile);
     if (!inFile.is_open()) {
@@ -94,10 +94,10 @@ template <typename Generator>
 std::vector<testcase_t> GetEVMJsonTestCases(const std::string &jsonFile, Generator gen_ui_output) {
     auto answer = std::vector<testcase_t>();
 
-    Json::CharReaderBuilder builder;
+    const Json::CharReaderBuilder builder;
     Json::Value obj;
 
-    std::string fullPathJsonFile = std::string(TESTVECTORS_DIR) + jsonFile;
+    const std::string fullPathJsonFile = std::string(TESTVECTORS_DIR) + jsonFile;
 
     std::ifstream inFile(fullPathJsonFile);
     if (!inFile.is_open()) {
@@ -129,7 +129,7 @@ void check_testcase(const testcase_t &tc, bool expert_mode, parser_context_t ctx
     parser_error_t err;
 
     uint8_t buffer[5000];
-    uint16_t bufferLen = parseHexString(buffer, sizeof(buffer), tc.blob.c_str());
+    const uint16_t bufferLen = parseHexString(buffer, sizeof(buffer), tc.blob.c_str());
 
     parser_tx_t tx_obj;
     memset(&tx_obj, 0, sizeof(tx_obj));

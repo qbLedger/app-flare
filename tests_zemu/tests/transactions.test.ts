@@ -20,6 +20,7 @@ import { models, hdpath, defaultOptions } from './common'
 import secp256k1 from 'secp256k1'
 import { createHash } from 'crypto'
 import { sha256 } from 'js-sha256'
+import { ec } from 'elliptic'
 
 const TEST_DATA = [
   {
@@ -127,13 +128,20 @@ describe.each(models)('Transactions', function (m) {
       const signatureResponse = await signatureRequest
       console.log(signatureResponse)
 
+      expect(signatureResponse).toHaveProperty('s')
+      expect(signatureResponse).toHaveProperty('r')
+      expect(signatureResponse).toHaveProperty('v')
       expect(signatureResponse.returnCode).toEqual(0x9000)
       expect(signatureResponse.errorMessage).toEqual('No errors')
 
+      const EC = new ec('secp256k1')
+      const signature_obj = {
+        r: signatureResponse.r!,
+        s: signatureResponse.s!,
+      }
       // Now verify the signature
       const message = createHash('sha256').update(data.blob).digest()
-      const signature = new Uint8Array(signatureResponse.signature!)
-      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), new Uint8Array(message), pubKey)
+      const valid = EC.verify(message, signature_obj, Buffer.from(pubKey), 'hex')
       expect(valid).toEqual(true)
     } finally {
       await sim.close()
@@ -166,13 +174,20 @@ describe.each(models)('Transactions', function (m) {
       const signatureResponse = await signatureRequest
       console.log(signatureResponse)
 
+      expect(signatureResponse).toHaveProperty('s')
+      expect(signatureResponse).toHaveProperty('r')
+      expect(signatureResponse).toHaveProperty('v')
       expect(signatureResponse.returnCode).toEqual(0x9000)
       expect(signatureResponse.errorMessage).toEqual('No errors')
 
+      const EC = new ec('secp256k1')
+      const signature_obj = {
+        r: signatureResponse.r!,
+        s: signatureResponse.s!,
+      }
       // Now verify the signature
       const message = createHash('sha256').update(data.blob).digest()
-      const signature = new Uint8Array(signatureResponse.signature!)
-      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), new Uint8Array(message), pubKey)
+      const valid = EC.verify(message, signature_obj, Buffer.from(pubKey), 'hex')
       expect(valid).toEqual(true)
     } finally {
       await sim.close()
@@ -201,12 +216,20 @@ describe.each(models)('Transactions', function (m) {
 
       const signatureResponse = await signatureRequest
       console.log(signatureResponse)
+
+      expect(signatureResponse).toHaveProperty('s')
+      expect(signatureResponse).toHaveProperty('r')
+      expect(signatureResponse).toHaveProperty('v')
       expect(signatureResponse.returnCode).toEqual(0x9000)
       expect(signatureResponse.errorMessage).toEqual('No errors')
 
+      const EC = new ec('secp256k1')
+      const signature_obj = {
+        r: signatureResponse.r!,
+        s: signatureResponse.s!,
+      }
       // Now verify the signature
-      const signature = new Uint8Array(signatureResponse.signature!)
-      const valid = secp256k1.ecdsaVerify(secp256k1.signatureImport(signature), msg, pubKey)
+      const valid = EC.verify(msg, signature_obj, Buffer.from(pubKey), 'hex')
       expect(valid).toEqual(true)
     } finally {
       await sim.close()

@@ -70,6 +70,17 @@ __Z_INLINE zxerr_t compressPubkey(const uint8_t *pubkey, uint16_t pubkeyLen, uin
     return zxerr_ok;
 }
 
+typedef struct {
+    uint8_t r[32];
+    uint8_t s[32];
+    uint8_t v;
+
+    // DER signature max size should be 73
+    // https://bitcoin.stackexchange.com/questions/77191/what-is-the-maximum-size-of-a-der-encoded-ecdsa-signature#77192
+    uint8_t der_signature[73];
+
+} __attribute__((packed)) signature_t;
+
 zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize, bool hash) {
     if (signature == NULL || sigSize == NULL) {
         return zxerr_invalid_crypto_settings;
@@ -89,7 +100,10 @@ zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigS
     cx_ecfp_private_key_t cx_privateKey = {0};
     uint8_t privateKeyData[64] = {0};
     unsigned int info = 0;
-    size_t signatureLength = MAX_DER_SIGNATURE_LEN;
+    uint32_t signatureLength = sizeof_field(signature_t, der_signature);
+    signature_t *const signature_object = (signature_t *)(signature);
+    *sigSize = 0;
+
     zxerr_t error = zxerr_unknown;
 
     // Generate keys
@@ -99,32 +113,26 @@ zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigS
 
     // Sign
     CATCH_CXERROR(cx_ecdsa_sign_no_throw(&cx_privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, messageDigest, CX_SHA256_SIZE,
-                                         signature, &signatureLength, &info));
+                                         signature_object->der_signature, &signatureLength, &info));
 
-    *sigSize = signatureLength;
-    error = zxerr_ok;
+    const err_convert_e err_c = convertDERtoRSV(signature_object->der_signature, info, signature_object->r,
+                                                signature_object->s, &signature_object->v);
+    if (err_c != no_error) {
+        error = zxerr_unknown;
+    } else {
+        *sigSize =
+            sizeof_field(signature_t, r) + sizeof_field(signature_t, s) + sizeof_field(signature_t, v) + signatureLength;
+        error = zxerr_ok;
+    }
 
 catch_cx_error:
     MEMZERO(&cx_privateKey, sizeof(cx_privateKey));
     MEMZERO(privateKeyData, sizeof(privateKeyData));
-
     if (error != zxerr_ok) {
         MEMZERO(signature, signatureMaxlen);
     }
-
     return error;
 }
-
-typedef struct {
-    uint8_t r[32];
-    uint8_t s[32];
-    uint8_t v;
-
-    // DER signature max size should be 73
-    // https://bitcoin.stackexchange.com/questions/77191/what-is-the-maximum-size-of-a-der-encoded-ecdsa-signature#77192
-    uint8_t der_signature[73];
-
-} __attribute__((packed)) signature_t;
 
 zxerr_t _sign(uint8_t *output, uint16_t outputLen, const uint8_t *message, uint16_t messageLen, uint16_t *sigSize,
               unsigned int *info) {
