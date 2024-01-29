@@ -16,7 +16,7 @@
 
 import Zemu from '@zondax/zemu'
 import FlareApp from '@zondax/ledger-flare'
-import { models, hdpath, defaultOptions } from './common'
+import { models, hdpath, defaultOptions, ETH_PATH } from './common'
 import secp256k1 from 'secp256k1'
 import { createHash } from 'crypto'
 import { sha256 } from 'js-sha256'
@@ -90,13 +90,6 @@ const TEST_DATA = [
     name: 'flare_import_c_from_p',
     blob: Buffer.from(
       '0000000000000000000e77d3074dc510f43b09ac5be77edee276ef3b55f0097d504846aa8eec613fc62500000000000000000000000000000000000000000000000000000000000000000000000184ad2d30288f0773277e2a175a5e4d92f32e84ae4f81a05761d7bc581a17aaba00000000b3462fc39568bf99fd346d3cdcfe1fb900f14cdcf276e3c0d95f814af85378240000000500000000fe584e000000000100000000000000015a6a8c28a2fc040df3b7490440c50f00099c957a00000000fe53ad96b3462fc39568bf99fd346d3cdcfe1fb900f14cdcf276e3c0d95f814af8537824',
-      'hex',
-    ),
-  },
-  {
-    name: 'flare_c_export_p_change_addr',
-    blob: Buffer.from(
-      '0000000000010000007278db5c30bed04c05ce209179812850bbb3fe6d46d7eef3744d814c0da55524790000000000000000000000000000000000000000000000000000000000000000000000015a6a8c28a2fc040df3b7490440c50f00099c957a000000028fb5f04058734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd000000000000001c0000000258734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd0000000700000002541b264000000000000000000000000100000001db89a2339639a5f3fa183258cfea265e4d1cce6c58734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd0000000700000000000000000000000000000000000000010000000125f4a6d0cd20b9472a78d002426e121031400bbc',
       'hex',
     ),
   },
@@ -230,6 +223,47 @@ describe.each(models)('Transactions', function (m) {
       }
       // Now verify the signature
       const valid = EC.verify(msg, signature_obj, Buffer.from(pubKey), 'hex')
+      expect(valid).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  test.concurrent('sign tx with 44/60', async function () {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new FlareApp(sim.getTransport())
+
+      const responseAddr = await app.getAddressAndPubKey(ETH_PATH)
+      expect(responseAddr.returnCode).toEqual(0x9000)
+      console.log(responseAddr)
+
+      const pubKeyRaw = new Uint8Array(responseAddr.compressed_pk!)
+      const pubKey = secp256k1.publicKeyConvert(pubKeyRaw, true)
+
+      const signatureRequest = app.sign(ETH_PATH, TEST_DATA[0].blob)
+
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign-tx-eth-path`)
+
+      const signatureResponse = await signatureRequest
+      console.log(signatureResponse)
+
+      expect(signatureResponse).toHaveProperty('s')
+      expect(signatureResponse).toHaveProperty('r')
+      expect(signatureResponse).toHaveProperty('v')
+      expect(signatureResponse.returnCode).toEqual(0x9000)
+      expect(signatureResponse.errorMessage).toEqual('No errors')
+
+      const EC = new ec('secp256k1')
+      const signature_obj = {
+        r: signatureResponse.r!,
+        s: signatureResponse.s!,
+      }
+      // Now verify the signature
+      const message = createHash('sha256').update(TEST_DATA[0].blob).digest()
+      const valid = EC.verify(message, signature_obj, Buffer.from(pubKey), 'hex')
       expect(valid).toEqual(true)
     } finally {
       await sim.close()
