@@ -159,20 +159,17 @@ parser_error_t getNumItems(const parser_context_t *ctx, uint8_t *numItems) {
     switch (ctx->tx_obj->tx_type) {
         case p_export_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
-            *numItems = 2 + ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
-                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) +
+            *numItems = 2 + ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs + ctx->tx_obj->tx.p_export_tx.secp_outs.n_outs +
                         expertModeHashField;
             break;
         case p_import_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
             *numItems = 2 + ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_addrs +
-                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_import_tx.base_secp_outs.out_render_mask) +
-                        expertModeHashField;
+                        ctx->tx_obj->tx.p_import_tx.base_secp_outs.n_outs + expertModeHashField;
             break;
         case c_export_tx:
             // Tx + fee + Amounts(= n_outs) + Addresses
-            *numItems = 2 + ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs +
-                        parser_get_renderable_outputs_number(ctx->tx_obj->tx.c_export_tx.secp_outs.out_render_mask) +
+            *numItems = 2 + ctx->tx_obj->tx.c_export_tx.secp_outs.n_addrs + ctx->tx_obj->tx.c_export_tx.secp_outs.n_outs +
                         expertModeHashField;
             break;
         case c_import_tx:

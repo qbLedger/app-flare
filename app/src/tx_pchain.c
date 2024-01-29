@@ -246,8 +246,7 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
     }
 
     // print ampount and addresses
-    if (displayIdx <= ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
-                          parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask)) {
+    if (displayIdx <= ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs + ctx->tx_obj->tx.p_export_tx.secp_outs.n_outs) {
         // Create new context parser for outputs
         parser_context_t output_ctx = {.buffer = ctx->tx_obj->tx.p_export_tx.secp_outs.outs,
                                        .bufferLen = ctx->bufferLen - ctx->tx_obj->tx.p_export_tx.secp_outs.outs_offset + 1,
@@ -273,8 +272,7 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         return parser_ok;
     }
 
-    if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
-                          parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) + 1) {
+    if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs + ctx->tx_obj->tx.p_export_tx.secp_outs.n_outs + 1) {
         snprintf(outKey, outKeyLen, "Fee");
         uint64_t fee = ctx->tx_obj->tx.p_export_tx.base_secp_ins.in_sum -
                        (ctx->tx_obj->tx.p_export_tx.base_secp_outs.out_sum + ctx->tx_obj->tx.p_export_tx.secp_outs.out_sum);
@@ -283,9 +281,7 @@ parser_error_t print_p_export_tx(const parser_context_t *ctx, uint8_t displayIdx
         return parser_ok;
     }
 
-    if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs +
-                          parser_get_renderable_outputs_number(ctx->tx_obj->tx.p_export_tx.secp_outs.out_render_mask) + 1 +
-                          1) {
+    if (displayIdx == ctx->tx_obj->tx.p_export_tx.secp_outs.n_addrs + ctx->tx_obj->tx.p_export_tx.secp_outs.n_outs + 1 + 1) {
         snprintf(outKey, outKeyLen, "Hash");
         printHash(ctx, outVal, outValLen, pageIdx, pageCount);
         return parser_ok;

@@ -105,7 +105,6 @@ typedef struct {
     const uint8_t *outs;
     uint16_t outs_offset;
     uint64_t out_sum;
-    uint64_t out_render_mask;
     uint32_t n_addrs;
 } transferable_out_secp_t;
 
@@ -132,7 +131,6 @@ typedef struct {
     const uint8_t *outs;
     uint16_t outs_offset;
     uint64_t out_sum;
-    uint64_t out_render_mask;
 } evm_outs_t;
 
 typedef struct {
