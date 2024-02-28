@@ -45,12 +45,10 @@ void extractHDPath(uint32_t rx, uint32_t offset) {
 
     memcpy(hdPath, G_io_apdu_buffer + offset, sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
-    const bool mainnet = hdPath[0] == HDPATH_0_DEFAULT && hdPath[1] == HDPATH_1_DEFAULT;
-
-    hdPath_len = HDPATH_LEN_DEFAULT;
-    if (!mainnet) {
+    if (hdPath[0] != HDPATH_0_DEFAULT || ((hdPath[1] != HDPATH_1_DEFAULT) && (hdPath[1] != HDPATH_ETH_1_DEFAULT))) {
         THROW(APDU_CODE_DATA_INVALID);
     }
+    hdPath_len = HDPATH_LEN_DEFAULT;
 }
 
 uint8_t extractHRP(uint32_t rx, uint32_t offset) {
