@@ -19,6 +19,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <stdint.h>
+
 #include "zxerror.h"
 
 const char *hash_parse();
