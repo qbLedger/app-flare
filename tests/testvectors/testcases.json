@@ -1,23 +1,29 @@
 [
     {
         "index": 1,
-        "name": "Export_Tx_with_change_address",
+        "name": "Export_Tx_2_address",
         "blob": "0000000000010000007278db5c30bed04c05ce209179812850bbb3fe6d46d7eef3744d814c0da55524790000000000000000000000000000000000000000000000000000000000000000000000015a6a8c28a2fc040df3b7490440c50f00099c957a000000028fb5f04058734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd000000000000001c0000000258734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd0000000700000002541b264000000000000000000000000100000001db89a2339639a5f3fa183258cfea265e4d1cce6c58734f94af871c3d131b56131b6fb7a0291eacadd261e69dfb42a9cdf6f7fddd00000007000000000000000000000000000000000000000100000001aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "output": [
             "0 | Export : C to P chain",
             "1 | Amount : 10.001 C2FLR",
             "2 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "2 | Address [2/2] : vwcckmr",
-            "3 | Fee : 1 C2FLR"
+            "3 | Amount : 0 C2FLR",
+            "4 | Address [1/2] : costwo14242424242424242424242424242424",
+            "4 | Address [2/2] : 28ew7nj",
+            "5 | Fee : 1 C2FLR"
         ],
         "output_expert": [
             "0 | Export : C to P chain",
             "1 | Amount : 10.001 C2FLR",
             "2 | Address [1/2] : costwo1mwy6yvuk8xjl87scxfvvl63xtex3enn",
             "2 | Address [2/2] : vwcckmr",
-            "3 | Fee : 1 C2FLR",
-            "4 | Hash [1/2] : fca356a36fa8ab1b3b6a6a7e5ff58cc7dc82bb",
-            "4 | Hash [2/2] : 09110093c93820fc45d72c776e"
+            "3 | Amount : 0 C2FLR",
+            "4 | Address [1/2] : costwo14242424242424242424242424242424",
+            "4 | Address [2/2] : 28ew7nj",
+            "5 | Fee : 1 C2FLR",
+            "6 | Hash [1/2] : fca356a36fa8ab1b3b6a6a7e5ff58cc7dc82bb",
+            "6 | Hash [2/2] : 09110093c93820fc45d72c776e"
         ]
     },
     {

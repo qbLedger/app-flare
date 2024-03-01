@@ -193,36 +193,11 @@ parser_error_t parse_evm_inputs(parser_context_t *c, evm_inputs_t *evm) {
     return parser_ok;
 }
 
-bool parser_output_contains_change_address(parser_context_t *c) {
-    bool contains = false;
-    // verify address is renderable  compare with CHANGE ADDRESS
-#if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
-    CTX_CHECK_AVAIL(c, ADDRESS_LEN)
-    if (MEMCMP(c->buffer + c->offset, change_address, ADDRESS_LEN) == 0) {
-        contains = false;
-    } else {
-        contains = true;
-    }
-#else
-    uint8_t test_change_address[ADDRESS_LEN] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
-                                                0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
-
-    CTX_CHECK_AVAIL(c, ADDRESS_LEN)
-    if (MEMCMP(c->buffer + c->offset, test_change_address, ADDRESS_LEN) == 0) {
-        contains = false;
-    } else {
-        contains = true;
-    }
-#endif
-    return contains;
-}
-
 parser_error_t parse_transferable_secp_output(parser_context_t *c, transferable_out_secp_t *outputs, bool verify_locktime) {
     if (outputs == NULL) {
         return parser_unexpected_error;
     }
     outputs->out_sum = 0;
-    bool is_renderable = false;
 
     for (uint32_t i = 0; i < outputs->n_outs; i++) {
         // skip assetId
@@ -259,19 +234,9 @@ parser_error_t parse_transferable_secp_output(parser_context_t *c, transferable_
             return parser_unexpected_threshold;
         }
 
-        // Following AVAX logic 99.99% of tx have only one address, so we should test if it matches the change_address, in
-        // case the output has more then one address then the output should be rendered with all its addresses
-        if (tmp_n_adresses == 1) {
-            is_renderable = parser_output_contains_change_address(c);
-            outputs->out_render_mask |= (is_renderable ? 1 : 0) << i;
+        for (uint32_t j = 0; j < tmp_n_adresses; j++) {
             verifyBytes(c, ADDRESS_LEN);
-            outputs->n_addrs = is_renderable ? (outputs->n_addrs + 1) : outputs->n_addrs;
-        } else {
-            outputs->out_render_mask |= 1 << i;
-            for (uint32_t j = 0; j < tmp_n_adresses; j++) {
-                verifyBytes(c, ADDRESS_LEN);
-                outputs->n_addrs++;
-            }
+            outputs->n_addrs++;
         }
     }
 
@@ -283,11 +248,9 @@ parser_error_t parse_evm_output(parser_context_t *c, evm_outs_t *outputs) {
         return parser_unexpected_error;
     }
     outputs->out_sum = 0;
-    uint8_t is_renderable = 0;
+
     for (uint32_t i = 0; i < outputs->n_outs; i++) {
         // Check address is renderable
-        is_renderable = parser_output_contains_change_address(c);
-        outputs->out_render_mask |= (is_renderable ? 1 : 0) << i;
         verifyBytes(c, ADDRESS_LEN);
 
         // Save amount to total
@@ -399,31 +362,27 @@ parser_error_t parser_get_secp_output_for_index(parser_context_t *out_ctx, trans
     uint64_t count = 0;
     uint32_t out_n_addr = 0;
     for (uint32_t i = 0; i < secp_outs.n_outs; i++) {
-        if ((secp_outs.out_render_mask & (1 << i)) == 0) {
-            CHECK_ERROR(parser_go_to_next_transferable_output(out_ctx));
-        } else {
-            // read amount and check if its the index we are looking for return element 0 for amount print
-            CHECK_ERROR(verifyBytes(out_ctx, AMOUNT_OFFSET));
-            CHECK_ERROR(read_u64(out_ctx, amount));
+        // read amount and check if its the index we are looking for return element 0 for amount print
+        CHECK_ERROR(verifyBytes(out_ctx, AMOUNT_OFFSET));
+        CHECK_ERROR(read_u64(out_ctx, amount));
+        if (count == inner_displayIdx) {
+            *element_idx = 0;
+            return parser_ok;
+        }
+
+        CHECK_ERROR(verifyBytes(out_ctx, N_ADDRESS_OFFSET));
+        CHECK_ERROR(read_u32(out_ctx, &out_n_addr));
+        // Go through output addresses and check if its the index we are looking for return element >0 for address print
+        for (uint32_t j = 1; j <= out_n_addr; j++) {
+            CHECK_ERROR(readBytes(out_ctx, address, ADDRESS_LEN));
+            count++;
             if (count == inner_displayIdx) {
-                *element_idx = 0;
+                *element_idx = j;
                 return parser_ok;
             }
-
-            CHECK_ERROR(verifyBytes(out_ctx, N_ADDRESS_OFFSET));
-            CHECK_ERROR(read_u32(out_ctx, &out_n_addr));
-            // Go through output addresses and check if its the index we are looking for return element >0 for address print
-            for (uint32_t j = 1; j <= out_n_addr; j++) {
-                CHECK_ERROR(readBytes(out_ctx, address, ADDRESS_LEN));
-                count++;
-                if (count == inner_displayIdx) {
-                    *element_idx = j;
-                    return parser_ok;
-                }
-            }
-            // We did not find the index in the address add one for the next amoount we are about to read
-            count++;
         }
+        // We did not find the index in the address add one for the next amoount we are about to read
+        count++;
     }
     return parser_unexpected_number_items;
 }
@@ -436,18 +395,14 @@ parser_error_t parser_get_evm_output_index(parser_context_t *out_ctx, evm_outs_t
     uint64_t count = 0;
 
     for (uint32_t i = 0; i < evm_outs.n_outs; i++) {
-        if ((evm_outs.out_render_mask & (1 << i)) == 0) {
-            CHECK_ERROR(parser_go_to_next_transferable_output(out_ctx));
-        } else {
-            CHECK_ERROR(readBytes(out_ctx, address, ADDRESS_LEN));
-            CHECK_ERROR(read_u64(out_ctx, amount));
-            CHECK_ERROR(verifyBytes(out_ctx, ASSET_ID_LEN));
+        CHECK_ERROR(readBytes(out_ctx, address, ADDRESS_LEN));
+        CHECK_ERROR(read_u64(out_ctx, amount));
+        CHECK_ERROR(verifyBytes(out_ctx, ASSET_ID_LEN));
 
-            if (count == out_index) {
-                return parser_ok;
-            }
-            count++;
+        if (count == out_index) {
+            return parser_ok;
         }
+        count++;
     }
     return parser_unexpected_number_items;
 }
