@@ -64,26 +64,27 @@ std::vector<std::string> EVMGenerateExpectedUIOutput(const Json::Value &json, bo
 
     ///
     auto message = json["message"];
-    auto to = message["To"].asString();
+    auto receiver = message["Receiver"].asString();
     auto contract = message["Contract"].asString();
-    auto value = message["Value"].asString();
+    auto amount = message["Amount"].asString();
     auto nonce = message["Nonce"].asString();
     auto gasPrice = message["GasPrice"].asString();
     auto gasLimit = message["GasLimit"].asString();
+    auto value = message["Value"].asString();
+    auto txhash = message["Eth-Hash"].asString();
+    auto data = message["Data"].asString();
     ///
 
     uint8_t idx = 0;
-    auto destAddress = FormatEthAddress("To", idx, to);
+    auto destAddress = FormatEthAddress("Receiver", idx, receiver);
     answer.insert(answer.end(), destAddress.begin(), destAddress.end());
 
-    if (value.compare(0, 2, "??") == 0) {
-        idx++;
-        auto contractAddress = FormatEthAddress("Contract", idx, contract);
-        answer.insert(answer.end(), contractAddress.begin(), contractAddress.end());
-    }
+    idx++;
+    auto contractAddress = FormatEthAddress("Contract", idx, contract);
+    answer.insert(answer.end(), contractAddress.begin(), contractAddress.end());
 
     idx++;
-    addTo(answer, "{} | Value : {}", idx, value);
+    addTo(answer, "{} | Amount : {}", idx, amount);
 
     idx++;
     addTo(answer, "{} | Nonce : {}", idx, nonce);
@@ -93,6 +94,16 @@ std::vector<std::string> EVMGenerateExpectedUIOutput(const Json::Value &json, bo
 
     idx++;
     addTo(answer, "{} | Gas limit : {}", idx, gasLimit);
+
+    idx++;
+    addTo(answer, "{} | Value : {}", idx, value);
+
+    idx++;
+    addTo(answer, "{} | Data : {}", idx, data);
+
+    idx++;
+    auto hash = FormatEthAddress("Eth-Hash", idx, txhash);
+    answer.insert(answer.end(), hash.begin(), hash.end());
 
     return answer;
 }
