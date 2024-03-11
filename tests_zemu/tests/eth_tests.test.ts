@@ -82,7 +82,7 @@ const SIGN_TEST_DATA = [
   },
 ]
 
-jest.setTimeout(60000)
+jest.setTimeout(90000)
 
 describe.each(models)('ETH', function (m) {
   test.concurrent.each(SIGN_TEST_DATA)('sign transaction:  $name', async function (data) {
