@@ -33,6 +33,7 @@ eth_tx_t eth_tx_obj;
 #define FLARE_MAINNET_CHAINID 14
 #define SONG_BIRD_CHAINID 19
 #define COSTON2_CHAINID 114
+#define DATA_BYTES_TO_PRINT 10
 
 static parser_error_t readChainID(parser_context_t *ctx, rlp_t *chainId) {
     if (ctx == NULL || chainId == NULL) {
@@ -174,15 +175,34 @@ parser_error_t _readEth(parser_context_t *ctx, eth_tx_t *tx_obj) {
 }
 
 parser_error_t _validateTxEth() {
-    if (!validateERC20(eth_tx_obj.legacy.data) && !app_mode_expert()) {
+    if (!validateERC20(&eth_tx_obj) && !app_mode_expert()) {
         return parser_unsupported_tx;
     }
 
     return parser_ok;
 }
 
-static parser_error_t printERC20(uint8_t displayIdx, char *outKey, uint16_t outKeyLen, char *outVal, uint16_t outValLen,
-                                 uint8_t pageIdx, uint8_t *pageCount) {
+static parser_error_t printEthHash(const parser_context_t *ctx, char *outKey, uint16_t outKeyLen, char *outVal,
+                                   uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
+    // we need to get keccak hash of the transaction data
+    uint8_t hash[32] = {0};
+#if defined(TARGET_NANOS) || defined(TARGET_NANOS2) || defined(TARGET_NANOX) || defined(TARGET_STAX)
+    keccak_digest(ctx->buffer, ctx->bufferLen, hash, 32);
+#endif
+
+    // now get the hex string of the hash
+    char hex[65] = {0};
+    array_to_hexstr(hex, 65, hash, 32);
+
+    snprintf(outKey, outKeyLen, "Eth-Hash");
+
+    pageString(outVal, outValLen, hex, pageIdx, pageCount);
+
+    return parser_ok;
+}
+
+static parser_error_t printERC20(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                 char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
     if (outKey == NULL || outVal == NULL || pageCount == NULL) {
         return parser_unexpected_error;
     }
@@ -190,43 +210,54 @@ static parser_error_t printERC20(uint8_t displayIdx, char *outKey, uint16_t outK
     MEMZERO(outVal, outValLen);
     *pageCount = 1;
 
-    const eth_base_t *legacy = &eth_tx_obj.legacy;
-    char tokenSymbol[10] = {0};
-    uint8_t decimals = 0;
-    CHECK_ERROR(getERC20Token(&eth_tx_obj.legacy.data, tokenSymbol, &decimals));
-    bool hideContract = (memcmp(tokenSymbol, "?? ", 3) != 0);
-
-    displayIdx += (displayIdx && hideContract) ? 1 : 0;
+    char data_array[40] = {0};
     switch (displayIdx) {
         case 0:
-            snprintf(outKey, outKeyLen, "To");
-            CHECK_ERROR(printEVMAddress(&legacy->to, outVal, outValLen, pageIdx, pageCount));
+            snprintf(outKey, outKeyLen, "Receiver");
+            rlp_t to = {.kind = RLP_KIND_STRING, .ptr = (eth_tx_obj.legacy.data.ptr + 4 + 12), .rlpLen = ETH_ADDRESS_LEN};
+            CHECK_ERROR(printEVMAddress(&to, outVal, outValLen, pageIdx, pageCount));
             break;
 
         case 1:
             snprintf(outKey, outKeyLen, "Contract");
-            rlp_t contractAddress = {.kind = RLP_KIND_STRING, .ptr = (legacy->data.ptr + 4 + 12), .rlpLen = 20};
+            rlp_t contractAddress = {.kind = RLP_KIND_STRING, .ptr = eth_tx_obj.legacy.to.ptr, .rlpLen = ETH_ADDRESS_LEN};
             CHECK_ERROR(printEVMAddress(&contractAddress, outVal, outValLen, pageIdx, pageCount));
             break;
 
         case 2:
-            snprintf(outKey, outKeyLen, "Value");
-            CHECK_ERROR(printERC20Value(&legacy->data, outVal, outValLen, pageIdx, pageCount));
+            snprintf(outKey, outKeyLen, "Amount");
+            CHECK_ERROR(printERC20Value(&eth_tx_obj, outVal, outValLen, pageIdx, pageCount));
             break;
 
         case 3:
             snprintf(outKey, outKeyLen, "Nonce");
-            CHECK_ERROR(printRLPNumber(&legacy->nonce, outVal, outValLen, pageIdx, pageCount));
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.nonce, outVal, outValLen, pageIdx, pageCount));
             break;
 
         case 4:
             snprintf(outKey, outKeyLen, "Gas price");
-            CHECK_ERROR(printRLPNumber(&legacy->gasPrice, outVal, outValLen, pageIdx, pageCount));
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.gasPrice, outVal, outValLen, pageIdx, pageCount));
             break;
 
         case 5:
             snprintf(outKey, outKeyLen, "Gas limit");
-            CHECK_ERROR(printRLPNumber(&legacy->gasLimit, outVal, outValLen, pageIdx, pageCount));
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.gasLimit, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 6:
+            snprintf(outKey, outKeyLen, "Value");
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.value, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 7:
+            snprintf(outKey, outKeyLen, "Data");
+            array_to_hexstr(data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr, DATA_BYTES_TO_PRINT);
+            snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            pageString(outVal, outValLen, data_array, pageIdx, pageCount);
+            break;
+
+        case 8:
+            CHECK_ERROR(printEthHash(ctx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
             break;
 
         default:
@@ -239,8 +270,8 @@ static parser_error_t printERC20(uint8_t displayIdx, char *outKey, uint16_t outK
 parser_error_t _getItemEth(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen, char *outVal,
                            uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
     // At the moment, clear signing is available only for ERC20
-    if (validateERC20(eth_tx_obj.legacy.data)) {
-        return printERC20(displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
+    if (validateERC20(&eth_tx_obj)) {
+        return printERC20(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount);
     }
 
     // Otherwise, check that ExpertMode is enabled
@@ -257,17 +288,7 @@ parser_error_t _getItemEth(const parser_context_t *ctx, uint8_t displayIdx, char
     }
 
     // we need to get keccak hash of the transaction data
-    uint8_t hash[32] = {0};
-    keccak_digest(ctx->buffer, ctx->bufferLen, hash, 32);
-
-    // now get the hex string of the hash
-    char hex[65] = {0};
-    array_to_hexstr(hex, 65, hash, 32);
-
-    snprintf(outKey, outKeyLen, "Eth-Hash:");
-
-    pageString(outVal, outValLen, hex, pageIdx, pageCount);
-
+    CHECK_ERROR(printEthHash(ctx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
     return parser_ok;
 }
 
@@ -279,17 +300,11 @@ parser_error_t _getNumItemsEth(uint8_t *numItems) {
         return parser_unexpected_error;
     }
     // Verify that tx is ERC20
-
-    if (validateERC20(eth_tx_obj.legacy.data)) {
-        char tokenSymbol[10] = {0};
-        uint8_t decimals = 0;
-        CHECK_ERROR(getERC20Token(&eth_tx_obj.legacy.data, tokenSymbol, &decimals));
-        // If token is not recognized, print value address
-        *numItems = (memcmp(tokenSymbol, "?? ", 3) != 0) ? 5 : 6;
+    if (validateERC20(&eth_tx_obj)) {
+        *numItems = 9;
         return parser_ok;
     }
 
-    // Warning message and the eth transaction hash for now.
     *numItems = 2;
     return parser_ok;
 }

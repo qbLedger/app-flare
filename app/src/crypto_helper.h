@@ -37,6 +37,8 @@ extern "C" {
     } while (0)
 
 #define MAX_BECH32_HRP_LEN 83u
+#define SELECTOR_LENGTH 4
+#define BIGINT_LENGTH 32
 
 extern uint8_t bech32_hrp_len;
 extern char bech32_hrp[MAX_BECH32_HRP_LEN + 1];

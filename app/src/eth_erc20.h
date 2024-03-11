@@ -18,13 +18,17 @@
 #include <stdint.h>
 
 #include "coin.h"
+#include "crypto_helper.h"
 #include "parser_common.h"
+#include "parser_impl_eth.h"
 #include "rlp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define ERC20_DATA_LENGTH 68  // 4 + 32 + 32
+#define ADDRESS_CONTRACT_LENGTH 20
 #define MAX_SYMBOL_LEN 10
 typedef struct {
     uint8_t address[ETH_ADDR_LEN];
@@ -32,9 +36,10 @@ typedef struct {
     uint8_t decimals;
 } erc20_tokens_t;
 
-bool validateERC20(rlp_t data);
-parser_error_t getERC20Token(const rlp_t *data, char tokenSymbol[MAX_SYMBOL_LEN], uint8_t *decimals);
-parser_error_t printERC20Value(const rlp_t *data, char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount);
+bool validateERC20(eth_tx_t *ethObj);
+parser_error_t getERC20Token(const eth_tx_t *ethObj, char tokenSymbol[MAX_SYMBOL_LEN], uint8_t *decimals);
+parser_error_t printERC20Value(const eth_tx_t *ethObj, char *outVal, uint16_t outValLen, uint8_t pageIdx,
+                               uint8_t *pageCount);
 
 #ifdef __cplusplus
 }
