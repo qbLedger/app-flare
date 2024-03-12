@@ -267,6 +267,90 @@ static parser_error_t printERC20(const parser_context_t *ctx, uint8_t displayIdx
     return parser_ok;
 }
 
+static parser_error_t printGeneric(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                   char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
+    if (outKey == NULL || outVal == NULL || pageCount == NULL) {
+        return parser_unexpected_error;
+    }
+    MEMZERO(outKey, outKeyLen);
+    MEMZERO(outVal, outValLen);
+    *pageCount = 1;
+
+    char data_array[40] = {0};
+
+    if ((displayIdx >= 2 && eth_tx_obj.legacy.data.rlpLen == 0) || eth_tx_obj.legacy.to.rlpLen == 0) {
+        displayIdx += 1;
+    }
+
+    switch (displayIdx) {
+        case 0:
+            snprintf(outKey, outKeyLen, "To");
+            rlp_t contractAddress = {.kind = RLP_KIND_STRING, .ptr = eth_tx_obj.legacy.to.ptr, .rlpLen = ETH_ADDRESS_LEN};
+            CHECK_ERROR(printEVMAddress(&contractAddress, outVal, outValLen, pageIdx, pageCount));
+            break;
+        case 1:
+            snprintf(outKey, outKeyLen, "Value");
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.value, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 2:
+            snprintf(outKey, outKeyLen, "Data");
+            array_to_hexstr(data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr, DATA_BYTES_TO_PRINT);
+            snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            pageString(outVal, outValLen, data_array, pageIdx, pageCount);
+            break;
+
+        case 3:
+            snprintf(outKey, outKeyLen, "Gas price");
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.gasPrice, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 4:
+            snprintf(outKey, outKeyLen, "Gas limit");
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.gasLimit, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 5:
+            snprintf(outKey, outKeyLen, "Nonce");
+            CHECK_ERROR(printRLPNumber(&eth_tx_obj.legacy.nonce, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        case 6:
+            CHECK_ERROR(printEthHash(ctx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        default:
+            return parser_display_page_out_of_range;
+    }
+
+    return parser_ok;
+}
+
+static parser_error_t printWarningHash(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
+                                       char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
+    if (outKey == NULL || outVal == NULL || pageCount == NULL) {
+        return parser_unexpected_error;
+    }
+    MEMZERO(outKey, outKeyLen);
+    MEMZERO(outVal, outValLen);
+    *pageCount = 1;
+
+    switch (displayIdx) {
+        case 0:
+            snprintf(outKey, outKeyLen, "Warning:");
+            pageString(outVal, outValLen, "Blind-signing EVM Tx", pageIdx, pageCount);
+            break;
+
+        case 1:
+            CHECK_ERROR(printEthHash(ctx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
+            break;
+
+        default:
+            return parser_display_page_out_of_range;
+    }
+
+    return parser_ok;
+}
 parser_error_t _getItemEth(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen, char *outVal,
                            uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount) {
     // At the moment, clear signing is available only for ERC20
@@ -277,18 +361,12 @@ parser_error_t _getItemEth(const parser_context_t *ctx, uint8_t displayIdx, char
     // Otherwise, check that ExpertMode is enabled
     if (!app_mode_expert()) return parser_unsupported_tx;
 
-    if (displayIdx > 1) {
-        return parser_display_idx_out_of_range;
+    if (eth_tx_obj.tx_type == legacy) {
+        CHECK_ERROR(printGeneric(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
+    } else {
+        CHECK_ERROR(printWarningHash(ctx, displayIdx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
     }
 
-    if (displayIdx == 0) {
-        snprintf(outKey, outKeyLen, "Warning:");
-        pageString(outVal, outValLen, "Blind-signing EVM Tx", pageIdx, pageCount);
-        return parser_ok;
-    }
-
-    // we need to get keccak hash of the transaction data
-    CHECK_ERROR(printEthHash(ctx, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount));
     return parser_ok;
 }
 
@@ -305,7 +383,12 @@ parser_error_t _getNumItemsEth(uint8_t *numItems) {
         return parser_ok;
     }
 
-    *numItems = 2;
+    if (eth_tx_obj.tx_type == legacy) {
+        *numItems = 5 + ((eth_tx_obj.legacy.data.rlpLen != 0) ? 1 : 0) + ((eth_tx_obj.legacy.to.rlpLen != 0) ? 1 : 0);
+    } else {
+        *numItems = 2;
+    }
+
     return parser_ok;
 }
 
