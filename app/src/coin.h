@@ -31,9 +31,6 @@ typedef enum {
 #define MAX_BIP32_PATH 10
 #define HDPATH_LEN_DEFAULT 5
 
-#define HDPATH_0_DEFAULT (0x80000000u | 0x2c)    // 44
-#define HDPATH_1_DEFAULT (0x80000000u | 0x2328)  // 9000
-
 #define HDPATH_ETH_0_DEFAULT (0x80000000u | 0x2cu)
 #define HDPATH_ETH_1_DEFAULT (0x80000000u | 0x3cu)
 
