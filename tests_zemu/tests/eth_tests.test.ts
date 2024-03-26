@@ -16,9 +16,9 @@
 
 import Zemu, { ButtonKind } from '@zondax/zemu'
 // @ts-ignore
-import FilecoinApp from '@zondax/ledger-flare'
 import { models, defaultOptions, ETH_PATH, EXPECTED_ETH_ADDRESS, EXPECTED_ETH_PK } from './common'
 import { ec } from 'elliptic'
+import FlareApp from '@zondax/ledger-flare'
 
 const sha3 = require('js-sha3')
 type NftInfo = {
@@ -89,7 +89,7 @@ describe.each(models)('ETH', function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new FilecoinApp(sim.getTransport())
+      const app = new FlareApp(sim.getTransport())
       const msg = data.op
 
       // Put the app in expert mode
@@ -132,7 +132,7 @@ describe('EthAddress', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new FilecoinApp(sim.getTransport())
+      const app = new FlareApp(sim.getTransport())
 
       const resp = await app.getEVMAddress(ETH_PATH, false, true)
 
@@ -157,9 +157,9 @@ describe('EthAddress', function () {
         approveKeyword: m.name === 'stax' ? 'QR' : '',
         approveAction: ButtonKind.ApproveTapButton,
       })
-      const app = new FilecoinApp(sim.getTransport())
+      const app = new FlareApp(sim.getTransport())
 
-      const resp = app.getEVMAddress(ETH_PATH, true)
+      const resp = app.getEVMAddress(ETH_PATH, true, true)
 
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
 

@@ -74,8 +74,8 @@ describe('Standard', function () {
       expect(resp.returnCode).toEqual(0x9000)
       expect(resp.errorMessage).toEqual('No errors')
 
-      const expected_address = 'flare1yh62d5xdyzu5w2nc6qpyymsjzqc5qzaumcf0jy'
-      const expected_pk = '0226525208673808e006c9efbc1bce812b21c67aa286eb550b3c0dd208095cc3a7'
+      const expected_address = 'flare1yalwlqksjyhcf7jsp7mx9tvxc62fwqzdnuen5c'
+      const expected_pk = '028b4bfd1f5fbf8575d7b2c9fc7dc0e587ec417b9f29dff89be57759adc8cdd11d'
 
       expect(resp.compressed_pk!.toString('hex')).toEqual(expected_pk)
       expect(resp.bech32_address).toEqual(expected_address)

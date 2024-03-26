@@ -9,7 +9,7 @@ const APP_PATH_X = resolve('../app/output/app_x.elf')
 const APP_PATH_SP = resolve('../app/output/app_s2.elf')
 const APP_PATH_ST = resolve('../app/output/app_stax.elf')
 
-export const hdpath = `m/44'/9000'/0/0/0`
+export const hdpath = `m/44'/60'/0/0/0`
 export const PATH_TESTNET = "m/44'/1'/0'/0/1"
 export const ETH_PATH = "m/44'/60'/0'/0'/5"
 export const EXPECTED_PUBLIC_KEY = '024f1dd50f180bfd546339e75410b127331469837fa618d950f7cfb8be351b0020'

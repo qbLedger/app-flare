@@ -23,6 +23,7 @@
 #include "actions.h"
 #include "addr.h"
 #include "app_main.h"
+#include "app_mode.h"
 #include "coin.h"
 #include "crypto.h"
 #include "crypto_helper.h"
@@ -33,6 +34,9 @@
 #include "view.h"
 #include "view_internal.h"
 #include "zxmacros.h"
+
+static const char *msg_error1 = "Expert Mode";
+static const char *msg_error2 = "Required";
 
 static bool tx_initialized = false;
 
@@ -45,7 +49,7 @@ void extractHDPath(uint32_t rx, uint32_t offset) {
 
     memcpy(hdPath, G_io_apdu_buffer + offset, sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
-    if (hdPath[0] != HDPATH_0_DEFAULT || ((hdPath[1] != HDPATH_1_DEFAULT) && (hdPath[1] != HDPATH_ETH_1_DEFAULT))) {
+    if (hdPath[0] != HDPATH_ETH_0_DEFAULT || (hdPath[1] != HDPATH_ETH_1_DEFAULT)) {
         THROW(APDU_CODE_DATA_INVALID);
     }
     hdPath_len = HDPATH_LEN_DEFAULT;
@@ -319,6 +323,12 @@ __Z_INLINE void handleSignHash(volatile uint32_t *flags, volatile uint32_t *tx, 
         THROW(APDU_CODE_OK);
     }
 
+    if (!app_mode_expert()) {
+        *flags |= IO_ASYNCH_REPLY;
+        view_custom_error_show(PIC(msg_error1), PIC(msg_error2));
+        THROW(APDU_CODE_DATA_INVALID);
+    }
+
     const char *error_msg = hash_parse();
     CHECK_APP_CANARY()
     if (error_msg != NULL) {
@@ -401,45 +411,45 @@ void handleApdu(volatile uint32_t *flags, volatile uint32_t *tx, uint32_t rx) {
 
             const uint8_t instruction = G_io_apdu_buffer[OFFSET_INS];
 
-            // Handle this case as ins number is the same as normal fil sign
+            // Handle this case as ins number is the same as normal flr sign
             // instruction
             if (instruction == INS_GET_ADDR_ETH && cla == CLA_ETH) {
                 handleGetAddrEth(flags, tx, rx);
-            }
-
-            switch (instruction) {
-                case INS_GET_VERSION: {
-                    handle_getversion(flags, tx);
-                    break;
-                }
-
-                case INS_GET_ADDR: {
-                    CHECK_PIN_VALIDATED()
-                    handleGetAddr(flags, tx, rx);
-                    break;
-                }
-
-                case INS_SIGN: {
-                    CHECK_PIN_VALIDATED()
-                    handleSign(flags, tx, rx);
-                    break;
-                }
-
-                case INS_SIGN_HASH: {
-                    CHECK_PIN_VALIDATED()
-                    handleSignHash(flags, tx, rx);
-                    break;
-                }
-                case INS_SIGN_ETH: {
-                    CHECK_PIN_VALIDATED()
-                    if (cla != CLA_ETH) {
-                        THROW(APDU_CODE_COMMAND_NOT_ALLOWED);
+            } else {
+                switch (instruction) {
+                    case INS_GET_VERSION: {
+                        handle_getversion(flags, tx);
+                        break;
                     }
-                    handleSignEth(flags, tx, rx);
-                    break;
+
+                    case INS_GET_ADDR: {
+                        CHECK_PIN_VALIDATED()
+                        handleGetAddr(flags, tx, rx);
+                        break;
+                    }
+
+                    case INS_SIGN: {
+                        CHECK_PIN_VALIDATED()
+                        handleSign(flags, tx, rx);
+                        break;
+                    }
+
+                    case INS_SIGN_HASH: {
+                        CHECK_PIN_VALIDATED()
+                        handleSignHash(flags, tx, rx);
+                        break;
+                    }
+                    case INS_SIGN_ETH: {
+                        CHECK_PIN_VALIDATED()
+                        if (cla != CLA_ETH) {
+                            THROW(APDU_CODE_COMMAND_NOT_ALLOWED);
+                        }
+                        handleSignEth(flags, tx, rx);
+                        break;
+                    }
+                    default:
+                        THROW(APDU_CODE_INS_NOT_SUPPORTED);
                 }
-                default:
-                    THROW(APDU_CODE_INS_NOT_SUPPORTED);
             }
         }
         CATCH(EXCEPTION_IO_RESET) { THROW(EXCEPTION_IO_RESET); }

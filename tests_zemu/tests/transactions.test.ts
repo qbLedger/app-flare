@@ -193,6 +193,9 @@ describe.each(models)('Transactions', function (m) {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new FlareApp(sim.getTransport())
 
+      //Change to expert mode so we can skip fields
+      await sim.toggleExpertMode()
+
       const responseAddr = await app.getAddressAndPubKey(hdpath)
       expect(responseAddr.returnCode).toEqual(0x9000)
       console.log(responseAddr)

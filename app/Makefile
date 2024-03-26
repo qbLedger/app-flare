@@ -40,7 +40,7 @@ $(info COIN  = [$(COIN)])
 
 ifeq ($(COIN),FLR)
 APPNAME = "Flare Network"
-APPPATH = "44'/9000'" --path "44'/60'"
+APPPATH = "44'/60'"
 else
 define error_message
 

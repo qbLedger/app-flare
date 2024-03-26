@@ -120,8 +120,7 @@ zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigS
     if (err_c != no_error) {
         error = zxerr_unknown;
     } else {
-        *sigSize =
-            sizeof_field(signature_t, r) + sizeof_field(signature_t, s) + sizeof_field(signature_t, v) + signatureLength;
+        *sigSize = sizeof_field(signature_t, r) + sizeof_field(signature_t, s) + sizeof_field(signature_t, v);
         error = zxerr_ok;
     }
 
