@@ -80,6 +80,24 @@ const SIGN_TEST_DATA = [
     },
     chainId: 14,
   },
+  {
+    name: 'undelegate_contract',
+    op: {
+      to: 'c67dce33d7a8efa5ffeb961899c73fe01bce9273',
+      value: '03e8',
+      data: 'b302f393',
+    },
+    chainId: 14,
+  },
+  {
+    name: 'deposit_dummy_contract',
+    op: {
+      to: 'c67dce33d7a8efa5ffeb961899c73fe01bce9273',
+      value: '03e8',
+      data: 'b302f3930001',
+    },
+    chainId: 14,
+  },
 ]
 
 const rawUnsignedLegacyTransaction = (params: any, chainId: number | undefined) => {
