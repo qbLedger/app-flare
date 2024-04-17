@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@zondax/ledger-flare": "../js",
-    "@zondax/zemu": "^0.47.0"
+    "@zondax/zemu": "^0.48.0"
   },
   "devDependencies": {
     "@ethereumjs/common": "^2.4.0",
@@ -45,6 +45,6 @@
     "secp256k1": "^5.0.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   }
 }
