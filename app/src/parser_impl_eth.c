@@ -251,8 +251,14 @@ static parser_error_t printERC20(const parser_context_t *ctx, uint8_t displayIdx
 
         case 7:
             snprintf(outKey, outKeyLen, "Data");
-            array_to_hexstr(data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr, DATA_BYTES_TO_PRINT);
-            snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            array_to_hexstr(
+                data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr,
+                eth_tx_obj.legacy.data.rlpLen > DATA_BYTES_TO_PRINT ? DATA_BYTES_TO_PRINT : eth_tx_obj.legacy.data.rlpLen);
+
+            if (eth_tx_obj.legacy.data.rlpLen > DATA_BYTES_TO_PRINT) {
+                snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            }
+
             pageString(outVal, outValLen, data_array, pageIdx, pageCount);
             break;
 
@@ -295,8 +301,14 @@ static parser_error_t printGeneric(const parser_context_t *ctx, uint8_t displayI
 
         case 2:
             snprintf(outKey, outKeyLen, "Data");
-            array_to_hexstr(data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr, DATA_BYTES_TO_PRINT);
-            snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            array_to_hexstr(
+                data_array, sizeof(data_array), eth_tx_obj.legacy.data.ptr,
+                eth_tx_obj.legacy.data.rlpLen > DATA_BYTES_TO_PRINT ? DATA_BYTES_TO_PRINT : eth_tx_obj.legacy.data.rlpLen);
+
+            if (eth_tx_obj.legacy.data.rlpLen > DATA_BYTES_TO_PRINT) {
+                snprintf(data_array + (2 * DATA_BYTES_TO_PRINT), 4, "...");
+            }
+
             pageString(outVal, outValLen, data_array, pageIdx, pageCount);
             break;
 
