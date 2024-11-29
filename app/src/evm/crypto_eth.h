@@ -31,7 +31,7 @@ extern uint32_t hdPathEth_len;
 extern uint8_t flr_chain_code;
 zxerr_t crypto_fillEthAddress(uint8_t *buffer, uint16_t buffer_len, uint16_t *addrLen);
 zxerr_t crypto_sign_eth(uint8_t *buffer, uint16_t signatureMaxlen, const uint8_t *message, uint16_t messageLen,
-                        uint16_t *sigSize);
+                        uint16_t *sigSize, bool personal_msg);
 zxerr_t keccak_digest(const unsigned char *in, unsigned int inLen, unsigned char *out, unsigned int outLen);
 
 #ifdef __cplusplus
