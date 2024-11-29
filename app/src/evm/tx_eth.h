@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   (c) 2018 - 2023 Zondax AG
+ *  (c) 2018 - 2024 Zondax AG
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,27 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <sigutils.h>
-#include <stdbool.h>
-
 #include "coin.h"
+#include "os.h"
 #include "zxerror.h"
 
-extern uint32_t hdPath[MAX_BIP32_PATH];
-extern uint32_t hdPath_len;
-extern uint8_t change_address[20];
+/// Parse message stored in transaction buffer
+/// This function should be called as soon as full buffer data is loaded.
+/// \return It returns NULL if data is valid or error message otherwise.
+const char *tx_parse_eth(uint8_t *error_code);
 
-zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen, uint16_t *addrResponseLen);
-zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen, uint16_t *sigSize, bool hash);
-zxerr_t crypto_get_address(void);
+/// Return the number of items in the transaction
+zxerr_t tx_getNumItemsEth(uint8_t *num_items);
 
-#ifdef __cplusplus
-}
-#endif
+/// Gets an specific item from the transaction (including paging)
+zxerr_t tx_getItemEth(int8_t displayIdx, char *outKey, uint16_t outKeyLen, char *outValue, uint16_t outValueLen,
+                      uint8_t pageIdx, uint8_t *pageCount);
+
+zxerr_t tx_compute_eth_v(unsigned int info, uint8_t *v);

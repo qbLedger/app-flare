@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   (c) 2018 - 2022 Zondax AG
+ *   (c) 2018 - 2024 Zondax AG
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,35 +19,34 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <stdint.h>
+#define CLA_ETH 0xE0
 
-#include "coin.h"
-#include "parser_common.h"
-#include "zxerror.h"
+#define HDPATH_ETH_0_DEFAULT (0x80000000u | 0x2cu)
+#define HDPATH_ETH_1_DEFAULT (0x80000000u | 0x3cu)
 
-#define KECCAK_256_SIZE 32
+// transaction is sent as a blob of rlp encoded bytes,
+#define P1_ETH_FIRST 0x00
+#define P1_ETH_MORE 0x80
+// eth address chain_code allowed valuec
+#define P2_NO_CHAINCODE 0x00
+#define P2_CHAINCODE 0x01
 
-#define CHECK_CX_OK(CALL)         \
-    do {                          \
-        cx_err_t __cx_err = CALL; \
-        if (__cx_err != CX_OK) {  \
-            return zxerr_unknown; \
-        }                         \
-    } while (0)
-
-#define MAX_BECH32_HRP_LEN 83u
+#define ETH_ADDR_LEN 20u
 #define SELECTOR_LENGTH 4
 #define BIGINT_LENGTH 32
+#define DATA_BYTES_TO_PRINT 10
 
-extern uint8_t bech32_hrp_len;
-extern char bech32_hrp[MAX_BECH32_HRP_LEN + 1];
+#define SECP256K1_PK_LEN 65u
+#define SECP256K1_SK_LEN 64u
+#define PK_LEN_SECP256K1_UNCOMPRESSED 65u
+#define SK_LEN_25519 64u
 
-uint8_t crypto_encodePubkey(const uint8_t *pubkey, char *out, uint16_t out_len);
+#define INS_SIGN_ETH 0x04
+#define INS_GET_ADDR_ETH 0x02
 
-zxerr_t crypto_sha256(const uint8_t *input, uint16_t inputLen, uint8_t *output, uint16_t outputLen);
+#define VIEW_ADDRESS_OFFSET_ETH (SECP256K1_PK_LEN + 1 + 1)
 
-zxerr_t ripemd160_32(uint8_t *out, uint8_t *in);
+#define COIN_DECIMALS 18
 #ifdef __cplusplus
 }
 #endif
