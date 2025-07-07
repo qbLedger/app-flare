@@ -152,9 +152,6 @@ CFLAGS += -Wvla
 
 $(info TARGET_NAME  = [$(TARGET_NAME)])
 $(info ICONNAME  = [$(ICONNAME)])
-ifeq ($(ICONNAME),)
-$(error ICONNAME is not set)
-endif
 
 .PHONY: version
 version:
